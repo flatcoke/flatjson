@@ -1,6 +1,6 @@
 "use client";
 
-import { sampleData } from "./SampleData";
+import { samples } from "./SampleData";
 
 interface ToolbarProps {
   onFormat: () => void;
@@ -121,8 +121,8 @@ export default function Toolbar({
       <select
         onChange={(e) => {
           const key = e.target.value;
-          if (key && sampleData[key]) {
-            onLoadSample(sampleData[key]);
+          if (key && samples[key]) {
+            onLoadSample(samples[key]);
           }
           e.target.value = "";
         }}
@@ -132,7 +132,7 @@ export default function Toolbar({
         <option value="" disabled>
           Load Sample...
         </option>
-        {Object.keys(sampleData).map((key) => (
+        {Object.keys(samples).map((key) => (
           <option key={key} value={key}>
             {key}
           </option>

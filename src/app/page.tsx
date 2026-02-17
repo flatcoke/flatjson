@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import TreeView from "@/components/TreeView";
 import SplitPanel from "@/components/SplitPanel";
 import Toolbar from "@/components/Toolbar";
-import { sampleData, defaultSample } from "@/components/SampleData";
+import { samples, DEFAULT_SAMPLE } from "@/components/SampleData";
 
 const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
   ssr: false,
@@ -17,7 +17,7 @@ const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
 });
 
 export default function Home() {
-  const [input, setInput] = useState(sampleData[defaultSample]);
+  const [input, setInput] = useState(samples[DEFAULT_SAMPLE]);
   const [layout, setLayout] = useState<"horizontal" | "vertical">("horizontal");
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);

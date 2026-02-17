@@ -1,209 +1,144 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
+import { useState, memo } from "react";
 
-interface TreeViewProps {
-  data: unknown;
-  showTypes: boolean;
-  showArrayIndex: boolean;
+type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
+
+const TYPE_COLORS: Record<string, string> = {
+  string: "#008000",
+  number: "#0000ff",
+  boolean: "#cc0000",
+  null: "#808080",
+  object: "#555",
+  array: "#555",
+};
+
+function typeOf(v: JsonValue): string {
+  if (v === null) return "null";
+  if (Array.isArray(v)) return "array";
+  return typeof v;
 }
 
-interface TreeNodeProps {
+function ValueSpan({ value }: { value: JsonValue }) {
+  const type = typeOf(value);
+  switch (type) {
+    case "string":
+      return <span style={{ color: TYPE_COLORS.string }}>&quot;{value as string}&quot;</span>;
+    case "number":
+      return <span style={{ color: TYPE_COLORS.number }}>{String(value)}</span>;
+    case "boolean":
+      return <span style={{ color: TYPE_COLORS.boolean }}>{String(value)}</span>;
+    case "null":
+      return <span style={{ color: TYPE_COLORS.null }}>null</span>;
+    default:
+      return null;
+  }
+}
+
+function TypeBadge({ type }: { type: string }) {
+  return (
+    <span
+      className="ml-2 text-[10px] px-1 py-0.5 rounded border border-gray-200 bg-gray-50"
+      style={{ color: TYPE_COLORS[type] ?? "#555" }}
+    >
+      {type}
+    </span>
+  );
+}
+
+function CopyButton({ path }: { path: string }) {
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(path); }}
+      className="ml-2 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 hover:text-blue-500 transition-opacity"
+      title={path}
+    >
+      📋
+    </button>
+  );
+}
+
+const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes, showArrayIndex, isLast }: {
   keyName: string | number | null;
-  value: unknown;
+  value: JsonValue;
   path: string;
   depth: number;
   showTypes: boolean;
   showArrayIndex: boolean;
   isLast: boolean;
-}
-
-function getType(value: unknown): string {
-  if (value === null) return "null";
-  if (Array.isArray(value)) return "array";
-  return typeof value;
-}
-
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text).catch(() => {});
-}
-
-const TreeNode = memo(function TreeNode({
-  keyName,
-  value,
-  path,
-  depth,
-  showTypes,
-  showArrayIndex,
-  isLast,
-}: TreeNodeProps) {
+}) {
   const [collapsed, setCollapsed] = useState(depth > 2);
-  const type = getType(value);
-  const isExpandable = type === "object" || type === "array";
-
-  const handleToggle = useCallback(() => {
-    if (isExpandable) setCollapsed((c) => !c);
-  }, [isExpandable]);
-
-  const handleCopyPath = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      copyToClipboard(path);
-    },
-    [path]
-  );
-
-  const renderKey = () => {
-    if (keyName === null) return null;
-    if (typeof keyName === "number") {
-      if (!showArrayIndex) return null;
-      return <span className="text-[#666] mr-1">{keyName}: </span>;
-    }
-    return (
-      <span className="text-[#a52a2a] font-bold mr-1">
-        &quot;{keyName}&quot;:{" "}
-      </span>
-    );
-  };
-
-  const renderValue = () => {
-    switch (type) {
-      case "string":
-        return (
-          <span className="text-[#008000]">
-            &quot;{String(value)}&quot;
-          </span>
-        );
-      case "number":
-        return <span className="text-[#0000ff]">{String(value)}</span>;
-      case "boolean":
-        return <span className="text-[#cc0000]">{String(value)}</span>;
-      case "null":
-        return <span className="text-[#808080]">null</span>;
-      default:
-        return null;
-    }
-  };
-
-  const renderTypeTag = () => {
-    if (!showTypes) return null;
-    const colors: Record<string, string> = {
-      string: "#008000",
-      number: "#0000ff",
-      boolean: "#cc0000",
-      null: "#808080",
-      object: "#555",
-      array: "#555",
-    };
-    return (
-      <span
-        className="ml-2 text-[10px] px-1 py-0.5 rounded"
-        style={{
-          color: colors[type] || "#555",
-          backgroundColor: "#f0f0f0",
-          border: "1px solid #e0e0e0",
-        }}
-      >
-        {type}
-      </span>
-    );
-  };
-
+  const type = typeOf(value);
+  const expandable = type === "object" || type === "array";
   const comma = isLast ? "" : ",";
+  const pad = { paddingLeft: depth * 20 };
 
-  if (!isExpandable) {
+  const key = keyName === null ? null
+    : typeof keyName === "number"
+      ? (showArrayIndex ? <span className="text-[#666] mr-1">{keyName}: </span> : null)
+      : <span className="text-[#a52a2a] font-bold mr-1">&quot;{keyName}&quot;: </span>;
+
+  if (!expandable) {
     return (
-      <div
-        className="group flex items-center py-[1px] hover:bg-[#f5f5f5] cursor-default"
-        style={{ paddingLeft: depth * 20 }}
-      >
-        {renderKey()}
-        {renderValue()}
-        <span className="text-[#333]">{comma}</span>
-        {renderTypeTag()}
-        <button
-          onClick={handleCopyPath}
-          className="ml-2 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 hover:text-blue-500 transition-opacity"
-          title={`Copy path: ${path}`}
-        >
-          📋
-        </button>
+      <div className="group flex items-center py-px hover:bg-[#f5f5f5]" style={pad}>
+        {key}
+        <ValueSpan value={value} />
+        <span>{comma}</span>
+        {showTypes && <TypeBadge type={type} />}
+        <CopyButton path={path} />
       </div>
     );
   }
 
-  const entries =
-    type === "array"
-      ? (value as unknown[]).map((v, i) => [i, v] as const)
-      : Object.entries(value as Record<string, unknown>);
+  const entries = Array.isArray(value)
+    ? value.map((v, i) => [i, v] as const)
+    : Object.entries(value as Record<string, JsonValue>);
 
-  const openBracket = type === "array" ? "[" : "{";
-  const closeBracket = type === "array" ? "]" : "}";
-  const count =
-    type === "array"
-      ? `${(value as unknown[]).length} items`
-      : `${Object.keys(value as Record<string, unknown>).length} keys`;
+  const open = type === "array" ? "[" : "{";
+  const close = type === "array" ? "]" : "}";
+  const count = entries.length;
+  const countLabel = type === "array" ? `${count} item${count !== 1 ? "s" : ""}` : `${count} key${count !== 1 ? "s" : ""}`;
 
   return (
     <div>
       <div
-        className="group flex items-center py-[1px] hover:bg-[#f5f5f5] cursor-pointer select-none"
-        style={{ paddingLeft: depth * 20 }}
-        onClick={handleToggle}
+        className="group flex items-center py-px hover:bg-[#f5f5f5] cursor-pointer select-none"
+        style={pad}
+        onClick={() => setCollapsed(c => !c)}
       >
-        <span className="w-4 text-[11px] text-gray-500 mr-1 inline-flex items-center justify-center flex-shrink-0">
+        <span className="w-4 text-[11px] text-gray-500 mr-1 inline-flex items-center justify-center shrink-0">
           {collapsed ? "▶" : "▼"}
         </span>
-        {renderKey()}
-        <span className="text-[#333]">{openBracket}</span>
+        {key}
+        <span>{open}</span>
         {collapsed && (
           <>
-            <span className="text-gray-400 mx-0.5">
-              {type === "array" ? "..." : "..."}
-            </span>
-            <span className="text-[#333]">{closeBracket}</span>
-            <span className="text-gray-400 ml-1 text-[11px]">
-              // {count}
-            </span>
-            <span className="text-[#333]">{comma}</span>
+            <span className="text-gray-400 mx-0.5">…</span>
+            <span>{close}</span>
+            <span className="text-gray-400 ml-1 text-[11px] italic">{countLabel}</span>
+            <span>{comma}</span>
           </>
         )}
-        {renderTypeTag()}
-        <button
-          onClick={handleCopyPath}
-          className="ml-2 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 hover:text-blue-500 transition-opacity"
-          title={`Copy path: ${path}`}
-        >
-          📋
-        </button>
+        {showTypes && <TypeBadge type={type} />}
+        <CopyButton path={path} />
       </div>
       {!collapsed && (
         <>
-          {entries.map(([key, val], idx) => (
+          {entries.map(([k, v], i) => (
             <TreeNode
-              key={typeof key === "number" ? key : String(key)}
-              keyName={key}
-              value={val}
-              path={
-                typeof key === "number"
-                  ? `${path}[${key}]`
-                  : `${path}.${key}`
-              }
+              key={String(k)}
+              keyName={k}
+              value={v}
+              path={typeof k === "number" ? `${path}[${k}]` : `${path}.${k}`}
               depth={depth + 1}
               showTypes={showTypes}
               showArrayIndex={showArrayIndex}
-              isLast={idx === entries.length - 1}
+              isLast={i === entries.length - 1}
             />
           ))}
-          <div
-            className="py-[1px]"
-            style={{ paddingLeft: depth * 20 }}
-          >
+          <div className="py-px" style={pad}>
             <span className="w-4 inline-block mr-1" />
-            <span className="text-[#333]">
-              {closeBracket}
-              {comma}
-            </span>
+            <span>{close}{comma}</span>
           </div>
         </>
       )}
@@ -211,16 +146,13 @@ const TreeNode = memo(function TreeNode({
   );
 });
 
-export default function TreeView({
-  data,
-  showTypes,
-  showArrayIndex,
-}: TreeViewProps) {
+export default function TreeView({ data, showTypes, showArrayIndex }: {
+  data: JsonValue;
+  showTypes: boolean;
+  showArrayIndex: boolean;
+}) {
   return (
-    <div
-      className="font-mono text-[13px] p-3 h-full overflow-auto"
-      style={{ minHeight: 0 }}
-    >
+    <div className="font-mono text-[13px] p-3 h-full overflow-auto" style={{ minHeight: 0 }}>
       <TreeNode
         keyName={null}
         value={data}
@@ -228,7 +160,7 @@ export default function TreeView({
         depth={0}
         showTypes={showTypes}
         showArrayIndex={showArrayIndex}
-        isLast={true}
+        isLast
       />
     </div>
   );
