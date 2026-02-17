@@ -51,13 +51,23 @@ function TypeBadge({ type, colors }: { type: string; colors: Record<string, stri
 }
 
 function CopyButton({ path }: { path: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function copy(e: React.MouseEvent) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(path).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    });
+  }
+
   return (
     <button
-      onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(path); }}
-      className="ml-2 text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 hover:text-[#4A0E8F] transition-opacity"
+      onClick={copy}
+      className={`ml-2 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity ${copied ? "text-green-500" : "text-gray-400 hover:text-[#4A0E8F]"}`}
       title={path}
     >
-      📋
+      {copied ? "✓" : "📋"}
     </button>
   );
 }
