@@ -37,6 +37,13 @@ const theme = EditorView.theme({
   ".cm-vim-panel": { backgroundColor: "#f8f9fa", borderTop: "1px solid #e0e0e0", padding: "2px 8px", fontFamily: "monospace", fontSize: "12px" },
 });
 
+function isLikelyYaml(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  try { JSON.parse(trimmed); return false; } catch {}
+  return /^[\w-]+\s*:/m.test(trimmed);
+}
+
 export default function JsonEditor({ value, onChange, vimMode }: {
   value: string;
   onChange: (v: string) => void;
@@ -45,6 +52,7 @@ export default function JsonEditor({ value, onChange, vimMode }: {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const vimComp = useRef(new Compartment());
+  const lintComp = useRef(new Compartment());
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -67,9 +75,8 @@ export default function JsonEditor({ value, onChange, vimMode }: {
           foldGutter(),
           highlightSelectionMatches(),
           history(),
-          lintGutter(),
           json(),
-          linter(jsonParseLinter()),
+          lintComp.current.of(isLikelyYaml(value) ? [] : [lintGutter(), linter(jsonParseLinter())]),
           syntaxHighlighting(highlighting),
           theme,
           keymap.of([
@@ -80,7 +87,16 @@ export default function JsonEditor({ value, onChange, vimMode }: {
             indentWithTab,
           ]),
           EditorView.updateListener.of((u) => {
-            if (u.docChanged) onChangeRef.current(u.state.doc.toString());
+            if (u.docChanged) {
+              const text = u.state.doc.toString();
+              onChangeRef.current(text);
+
+              // Toggle linter based on content type
+              const yaml = isLikelyYaml(text);
+              u.view.dispatch({
+                effects: lintComp.current.reconfigure(yaml ? [] : [lintGutter(), linter(jsonParseLinter())]),
+              });
+            }
           }),
           EditorView.lineWrapping,
         ],
@@ -103,6 +119,10 @@ export default function JsonEditor({ value, onChange, vimMode }: {
     const cur = view.state.doc.toString();
     if (cur !== value) {
       view.dispatch({ changes: { from: 0, to: cur.length, insert: value } });
+      // Update linter for new content
+      view.dispatch({
+        effects: lintComp.current.reconfigure(isLikelyYaml(value) ? [] : [lintGutter(), linter(jsonParseLinter())]),
+      });
     }
   }, [value]);
 
