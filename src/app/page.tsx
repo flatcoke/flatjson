@@ -85,7 +85,7 @@ function PanelHeader({ children, right }: { children: React.ReactNode; right?: R
 }
 
 export default function Home() {
-  const [input, setInput] = useState(samples[DEFAULT_SAMPLE]);
+  const [input, setInput] = useState("");
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);
   const [outputTab, setOutputTab] = useState<OutputTab>("tree");
@@ -98,6 +98,10 @@ export default function Home() {
     if (localStorage.getItem("flatjson:vim") === "true") setVimMode(true);
     const saved = localStorage.getItem("flatjson:theme");
     if (saved && themes[saved]) setThemeName(saved);
+    if (!localStorage.getItem("flatjson:visited")) {
+      setInput(samples[DEFAULT_SAMPLE]);
+      localStorage.setItem("flatjson:visited", "1");
+    }
     setMounted(true);
   }, []);
 
