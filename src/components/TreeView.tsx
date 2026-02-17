@@ -64,10 +64,10 @@ function CopyButton({ path }: { path: string }) {
   return (
     <button
       onClick={copy}
-      className={`ml-2 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity ${copied ? "text-green-500" : "text-gray-400 hover:text-[#4A0E8F]"}`}
+      className={`ml-2 text-[10px] ${copied ? "text-green-500 opacity-100" : "opacity-0 group-hover:opacity-100 group-hover:transition-opacity text-gray-400 hover:text-[#4A0E8F]"}`}
       title={path}
     >
-      {copied ? "✓" : "📋"}
+      {copied ? <span className="font-bold">Copied!</span> : "📋"}
     </button>
   );
 }
