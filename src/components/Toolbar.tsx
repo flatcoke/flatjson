@@ -3,9 +3,6 @@
 import { samples } from "./SampleData";
 
 interface ToolbarProps {
-  onFormat: () => void;
-  onMinify: () => void;
-  onToYaml: () => void;
   onClear: () => void;
   showTypes: boolean;
   onShowTypesChange: (v: boolean) => void;
@@ -36,9 +33,6 @@ function Sep() {
 }
 
 export default function Toolbar({
-  onFormat,
-  onMinify,
-  onToYaml,
   onClear,
   showTypes,
   onShowTypesChange,
@@ -50,12 +44,7 @@ export default function Toolbar({
 }: ToolbarProps) {
   return (
     <div className="flex items-center gap-3 px-4 py-2 bg-[#f8f9fa] border-b border-gray-200 flex-wrap">
-      <div className="flex items-center gap-1.5">
-        <Btn onClick={onFormat}>Format</Btn>
-        <Btn onClick={onMinify}>Minify</Btn>
-        <Btn onClick={onToYaml}>To YAML</Btn>
-        <Btn onClick={onClear}>Clear</Btn>
-      </div>
+      <Btn onClick={onClear}>Clear</Btn>
 
       <Sep />
 

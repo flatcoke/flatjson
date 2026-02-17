@@ -4,14 +4,16 @@ import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import YAML from "yaml";
 import TreeView from "@/components/TreeView";
-import SplitPanel from "@/components/SplitPanel";
 import Toolbar from "@/components/Toolbar";
+import SplitPanel from "@/components/SplitPanel";
 import { samples, DEFAULT_SAMPLE } from "@/components/SampleData";
 
 const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
   ssr: false,
   loading: () => <div className="h-full flex items-center justify-center text-gray-400 text-sm">Loading editor…</div>,
 });
+
+type OutputTab = "tree" | "json" | "yaml";
 
 type ParseResult =
   | { ok: true; data: unknown; source: "json" | "yaml" }
@@ -22,12 +24,10 @@ function tryParse(input: string): ParseResult {
   const trimmed = input.trim();
   if (!trimmed) return { ok: false, empty: true };
 
-  // Try JSON first
   try {
     return { ok: true, data: JSON.parse(trimmed), source: "json" };
   } catch {}
 
-  // Try YAML
   try {
     const data = YAML.parse(trimmed);
     if (data !== null && data !== undefined && typeof data === "object") {
@@ -35,13 +35,9 @@ function tryParse(input: string): ParseResult {
     }
   } catch {}
 
-  // JSON error message is more useful for the user
-  try {
-    JSON.parse(trimmed);
-  } catch (e) {
+  try { JSON.parse(trimmed); } catch (e) {
     return { ok: false, empty: false, error: (e as Error).message };
   }
-
   return { ok: false, empty: false, error: "Invalid input" };
 }
 
@@ -49,6 +45,7 @@ export default function Home() {
   const [input, setInput] = useState(samples[DEFAULT_SAMPLE]);
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);
+  const [outputTab, setOutputTab] = useState<OutputTab>("tree");
   const [vimMode, setVimMode] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("flatjson:vim") === "true";
@@ -61,25 +58,18 @@ export default function Home() {
 
   const parsed = useMemo(() => tryParse(input), [input]);
 
-  function format() {
-    if (!parsed.ok) return;
-    setInput(JSON.stringify(parsed.data, null, 2));
-  }
-
-  function minify() {
-    if (!parsed.ok) return;
-    setInput(JSON.stringify(parsed.data));
-  }
-
-  function toYaml() {
-    if (!parsed.ok) return;
-    setInput(YAML.stringify(parsed.data, { indent: 2 }));
-  }
+  const formatted = useMemo(() => {
+    if (!parsed.ok) return { json: "", yaml: "" };
+    return {
+      json: JSON.stringify(parsed.data, null, 2),
+      yaml: YAML.stringify(parsed.data, { indent: 2 }),
+    };
+  }, [parsed]);
 
   const statusLabel = parsed.ok
     ? parsed.source === "yaml"
-      ? <span className="text-green-600 text-[11px]">✓ YAML detected</span>
-      : <span className="text-green-600 text-[11px]">✓ Valid JSON</span>
+      ? <span className="text-green-600 text-[11px]">✓ YAML</span>
+      : <span className="text-green-600 text-[11px]">✓ JSON</span>
     : !parsed.empty
       ? <span className="text-red-500 text-[11px]">⚠ Error</span>
       : null;
@@ -94,9 +84,6 @@ export default function Home() {
       </header>
 
       <Toolbar
-        onFormat={format}
-        onMinify={minify}
-        onToYaml={toYaml}
         onClear={() => setInput("")}
         showTypes={showTypes}
         onShowTypesChange={setShowTypes}
@@ -111,7 +98,7 @@ export default function Home() {
         <SplitPanel
           left={
             <div className="h-full flex flex-col border-r border-gray-200">
-              <PanelHeader>Input</PanelHeader>
+              <PanelHeader right={statusLabel}>Input</PanelHeader>
               <div className="flex-1 min-h-0">
                 <JsonEditor value={input} onChange={setInput} vimMode={vimMode} />
               </div>
@@ -119,10 +106,33 @@ export default function Home() {
           }
           right={
             <div className="h-full flex flex-col">
-              <PanelHeader right={statusLabel}>Parsed Output</PanelHeader>
+              <div className="px-3 py-1.5 bg-[#fafafa] border-b border-gray-200 flex items-center justify-between">
+                <div className="flex gap-1">
+                  {(["tree", "json", "yaml"] as const).map(tab => (
+                    <button
+                      key={tab}
+                      onClick={() => setOutputTab(tab)}
+                      className={`px-2.5 py-0.5 text-xs font-medium rounded transition-colors ${
+                        outputTab === tab
+                          ? "bg-blue-500 text-white"
+                          : "text-gray-500 hover:bg-gray-200"
+                      }`}
+                    >
+                      {tab === "tree" ? "Tree" : tab.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+                {statusLabel}
+              </div>
               <div className="flex-1 min-h-0 overflow-auto">
                 {parsed.ok ? (
-                  <TreeView data={parsed.data} showTypes={showTypes} showArrayIndex={showArrayIndex} />
+                  outputTab === "tree" ? (
+                    <TreeView data={parsed.data} showTypes={showTypes} showArrayIndex={showArrayIndex} />
+                  ) : (
+                    <pre className="p-4 text-[13px] font-mono text-gray-800 whitespace-pre-wrap">
+                      {outputTab === "json" ? formatted.json : formatted.yaml}
+                    </pre>
+                  )
                 ) : parsed.empty ? (
                   <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                     Paste JSON or YAML in the editor
