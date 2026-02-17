@@ -147,7 +147,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
 });
 
 export default function TreeView({ data, showTypes, showArrayIndex }: {
-  data: JsonValue;
+  data: unknown;
   showTypes: boolean;
   showArrayIndex: boolean;
 }) {
@@ -155,7 +155,7 @@ export default function TreeView({ data, showTypes, showArrayIndex }: {
     <div className="font-mono text-[13px] p-3 h-full overflow-auto" style={{ minHeight: 0 }}>
       <TreeNode
         keyName={null}
-        value={data}
+        value={data as JsonValue}
         path="$"
         depth={0}
         showTypes={showTypes}

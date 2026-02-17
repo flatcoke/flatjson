@@ -2,17 +2,25 @@
 
 import { samples } from "./SampleData";
 
-function Btn({ active, onClick, children, title }: {
-  active?: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-  title?: string;
-}) {
+interface ToolbarProps {
+  onFormat: () => void;
+  onMinify: () => void;
+  onToYaml: () => void;
+  onClear: () => void;
+  showTypes: boolean;
+  onShowTypesChange: (v: boolean) => void;
+  showArrayIndex: boolean;
+  onShowArrayIndexChange: (v: boolean) => void;
+  vimMode: boolean;
+  onVimModeChange: (v: boolean) => void;
+  onLoadSample: (json: string) => void;
+}
+
+function Btn({ children, active, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
   return (
     <button
-      onClick={onClick}
-      title={title}
-      className={`px-2.5 py-1 text-xs font-medium rounded border transition-colors ${
+      {...props}
+      className={`px-3 py-1 text-xs font-medium rounded border transition-colors ${
         active
           ? "bg-blue-500 text-white border-blue-500"
           : "bg-white border-gray-300 hover:bg-gray-50 active:bg-gray-100"
@@ -23,76 +31,55 @@ function Btn({ active, onClick, children, title }: {
   );
 }
 
-function Toggle({ checked, onChange, label }: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  label: string;
-}) {
-  return (
-    <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
-      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="rounded" />
-      {label}
-    </label>
-  );
-}
-
-function Divider() {
+function Sep() {
   return <div className="w-px h-5 bg-gray-300" />;
 }
 
-export default function Toolbar(props: {
-  onFormat: () => void;
-  onMinify: () => void;
-  onClear: () => void;
-  layout: "horizontal" | "vertical";
-  onLayoutChange: (l: "horizontal" | "vertical") => void;
-  showTypes: boolean;
-  onShowTypesChange: (v: boolean) => void;
-  showArrayIndex: boolean;
-  onShowArrayIndexChange: (v: boolean) => void;
-  vimMode: boolean;
-  onVimModeChange: (v: boolean) => void;
-  onLoadSample: (json: string) => void;
-}) {
+export default function Toolbar({
+  onFormat,
+  onMinify,
+  onToYaml,
+  onClear,
+  showTypes,
+  onShowTypesChange,
+  showArrayIndex,
+  onShowArrayIndexChange,
+  vimMode,
+  onVimModeChange,
+  onLoadSample,
+}: ToolbarProps) {
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2 bg-[#f8f9fa] border-b border-gray-200 flex-wrap">
+    <div className="flex items-center gap-3 px-4 py-2 bg-[#f8f9fa] border-b border-gray-200 flex-wrap">
       <div className="flex items-center gap-1.5">
-        <Btn onClick={props.onFormat}>Format</Btn>
-        <Btn onClick={props.onMinify}>Minify</Btn>
-        <Btn onClick={props.onClear}>Clear</Btn>
+        <Btn onClick={onFormat}>Format</Btn>
+        <Btn onClick={onMinify}>Minify</Btn>
+        <Btn onClick={onToYaml}>To YAML</Btn>
+        <Btn onClick={onClear}>Clear</Btn>
       </div>
 
-      <Divider />
+      <Sep />
 
-      <div className="flex items-center gap-1.5">
-        <Btn active={props.layout === "horizontal"} onClick={() => props.onLayoutChange("horizontal")} title="Side by side">◫</Btn>
-        <Btn active={props.layout === "vertical"} onClick={() => props.onLayoutChange("vertical")} title="Top and bottom">⬒</Btn>
-      </div>
+      <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+        <input type="checkbox" checked={showTypes} onChange={e => onShowTypesChange(e.target.checked)} className="rounded" />
+        Types
+      </label>
+      <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+        <input type="checkbox" checked={showArrayIndex} onChange={e => onShowArrayIndexChange(e.target.checked)} className="rounded" />
+        Array Index
+      </label>
 
-      <Divider />
+      <Sep />
 
-      <Toggle checked={props.showTypes} onChange={props.onShowTypesChange} label="Types" />
-      <Toggle checked={props.showArrayIndex} onChange={props.onShowArrayIndexChange} label="Index" />
+      <Btn active={vimMode} onClick={() => onVimModeChange(!vimMode)} title="Toggle Vim keybindings">
+        Vim
+      </Btn>
 
-      <Divider />
-
-      <button
-        onClick={() => props.onVimModeChange(!props.vimMode)}
-        className={`px-2 py-1 text-xs font-mono font-bold rounded border transition-colors ${
-          props.vimMode
-            ? "bg-green-600 text-white border-green-600"
-            : "bg-white border-gray-300 hover:bg-gray-50 text-gray-500"
-        }`}
-      >
-        VIM
-      </button>
-
-      <Divider />
+      <Sep />
 
       <select
-        onChange={e => { if (e.target.value) props.onLoadSample(samples[e.target.value]); e.target.value = ""; }}
+        onChange={e => { if (e.target.value) onLoadSample(samples[e.target.value]); e.target.value = ""; }}
         defaultValue=""
-        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded cursor-pointer"
+        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
       >
         <option value="" disabled>Load Sample…</option>
         {Object.keys(samples).map(k => <option key={k} value={k}>{k}</option>)}
