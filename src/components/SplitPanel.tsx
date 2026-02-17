@@ -48,7 +48,7 @@ export default function SplitPanel({ left, right }: SplitPanelProps) {
       </div>
       <div
         onMouseDown={onMouseDown}
-        className="flex-shrink-0 w-1.5 bg-gray-200 hover:bg-blue-400 transition-colors cursor-col-resize"
+        className="flex-shrink-0 w-1.5 bg-gray-200 hover:bg-[#6B21A8] transition-colors cursor-col-resize"
       />
       <div className="overflow-hidden flex-1" style={{ minWidth: 0 }}>
         {right}
