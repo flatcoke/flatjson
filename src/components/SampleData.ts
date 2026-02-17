@@ -54,6 +54,91 @@ export const samples: Record<string, string> = {
     unicode: "こんにちは世界 🌍",
     escaped: "Line 1\nLine 2\tTabbed",
   }, null, 2),
+
+  "Deep Nested": JSON.stringify({
+    company: {
+      name: "Acme Corp",
+      founded: 2020,
+      active: true,
+      departments: [
+        {
+          name: "Engineering",
+          head: "Alice Kim",
+          teams: [
+            {
+              name: "Backend",
+              language: "Go",
+              members: [
+                {
+                  name: "Bob",
+                  role: "Senior",
+                  skills: {
+                    primary: "Go",
+                    secondary: ["gRPC", "PostgreSQL"],
+                    certifications: {
+                      cloud: {
+                        provider: "AWS",
+                        level: "Professional",
+                        exams: {
+                          passed: [
+                            {
+                              name: "Solutions Architect",
+                              score: 92,
+                              date: "2024-03-15",
+                              details: {
+                                attempts: 1,
+                                duration_min: 120,
+                                proctored: true,
+                                venue: {
+                                  type: "online",
+                                  platform: "PearsonVUE",
+                                  session: { id: "sess-001", recorded: true },
+                                },
+                              },
+                            },
+                          ],
+                          pending: ["DevOps Engineer"],
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  name: "Carol",
+                  role: "Junior",
+                  skills: { primary: "TypeScript", secondary: ["React", "Next.js"] },
+                },
+              ],
+            },
+            {
+              name: "Frontend",
+              language: "TypeScript",
+              members: [
+                {
+                  name: "Dave",
+                  role: "Lead",
+                  skills: { primary: "React", secondary: ["Vue", "Svelte"] },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "Design",
+          head: "Eve Park",
+          teams: [
+            {
+              name: "UX",
+              members: [
+                { name: "Frank", role: "Senior", tools: ["Figma", "Framer"] },
+              ],
+            },
+          ],
+        },
+      ],
+      metadata: null,
+    },
+  }, null, 2),
 };
 
 export const DEFAULT_SAMPLE = "Simple Object";
