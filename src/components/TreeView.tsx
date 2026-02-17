@@ -60,7 +60,7 @@ const TreeNode = memo(function TreeNode({
       return <span className="text-[#666] mr-1">{keyName}: </span>;
     }
     return (
-      <span className="text-[#881280] mr-1">
+      <span className="text-[#a52a2a] font-bold mr-1">
         &quot;{keyName}&quot;:{" "}
       </span>
     );
@@ -70,14 +70,14 @@ const TreeNode = memo(function TreeNode({
     switch (type) {
       case "string":
         return (
-          <span className="text-[#067d17]">
+          <span className="text-[#008000]">
             &quot;{String(value)}&quot;
           </span>
         );
       case "number":
-        return <span className="text-[#1a1aa6]">{String(value)}</span>;
+        return <span className="text-[#0000ff]">{String(value)}</span>;
       case "boolean":
-        return <span className="text-[#c41a16]">{String(value)}</span>;
+        return <span className="text-[#cc0000]">{String(value)}</span>;
       case "null":
         return <span className="text-[#808080]">null</span>;
       default:
@@ -88,9 +88,9 @@ const TreeNode = memo(function TreeNode({
   const renderTypeTag = () => {
     if (!showTypes) return null;
     const colors: Record<string, string> = {
-      string: "#067d17",
-      number: "#1a1aa6",
-      boolean: "#c41a16",
+      string: "#008000",
+      number: "#0000ff",
+      boolean: "#cc0000",
       null: "#808080",
       object: "#555",
       array: "#555",
@@ -158,13 +158,14 @@ const TreeNode = memo(function TreeNode({
         <span className="text-[#333]">{openBracket}</span>
         {collapsed && (
           <>
-            <span className="text-gray-400 mx-1 text-xs">
-              {count}
+            <span className="text-gray-400 mx-0.5">
+              {type === "array" ? "..." : "..."}
             </span>
-            <span className="text-[#333]">
-              {closeBracket}
-              {comma}
+            <span className="text-[#333]">{closeBracket}</span>
+            <span className="text-gray-400 ml-1 text-[11px]">
+              // {count}
             </span>
+            <span className="text-[#333]">{comma}</span>
           </>
         )}
         {renderTypeTag()}

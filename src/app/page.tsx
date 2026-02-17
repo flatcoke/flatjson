@@ -21,7 +21,7 @@ export default function Home() {
   const [layout, setLayout] = useState<"horizontal" | "vertical">("horizontal");
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);
-
+  const [vimMode, setVimMode] = useState(false);
   const parseResult = useMemo(() => {
     if (!input.trim()) {
       return { data: null, error: null, empty: true };
@@ -84,6 +84,8 @@ export default function Home() {
         onShowTypesChange={setShowTypes}
         showArrayIndex={showArrayIndex}
         onShowArrayIndexChange={setShowArrayIndex}
+        vimMode={vimMode}
+        onVimModeChange={setVimMode}
         onLoadSample={handleLoadSample}
         onClear={handleClear}
       />
@@ -98,7 +100,7 @@ export default function Home() {
                 JSON Input
               </div>
               <div className="flex-1 min-h-0">
-                <JsonEditor value={input} onChange={setInput} />
+                <JsonEditor value={input} onChange={setInput} vimMode={vimMode} />
               </div>
             </div>
           }

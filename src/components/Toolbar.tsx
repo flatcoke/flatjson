@@ -11,6 +11,8 @@ interface ToolbarProps {
   onShowTypesChange: (show: boolean) => void;
   showArrayIndex: boolean;
   onShowArrayIndexChange: (show: boolean) => void;
+  vimMode: boolean;
+  onVimModeChange: (enabled: boolean) => void;
   onLoadSample: (json: string) => void;
   onClear: () => void;
 }
@@ -24,6 +26,8 @@ export default function Toolbar({
   onShowTypesChange,
   showArrayIndex,
   onShowArrayIndexChange,
+  vimMode,
+  onVimModeChange,
   onLoadSample,
   onClear,
 }: ToolbarProps) {
@@ -97,6 +101,20 @@ export default function Toolbar({
         />
         Array Index
       </label>
+
+      <div className="w-px h-5 bg-gray-300" />
+
+      <button
+        onClick={() => onVimModeChange(!vimMode)}
+        className={`px-2 py-1 text-xs font-medium rounded border transition-colors ${
+          vimMode
+            ? "bg-green-600 text-white border-green-600"
+            : "bg-white border-gray-300 hover:bg-gray-50 text-gray-600"
+        }`}
+        title="Toggle Vim keybindings"
+      >
+        Vim
+      </button>
 
       <div className="w-px h-5 bg-gray-300" />
 
