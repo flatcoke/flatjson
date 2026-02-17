@@ -65,7 +65,11 @@ const yamlLinter = linter((view: EditorView): Diagnostic[] => {
   }
 });
 
-const jsonLinter = linter(jsonParseLinter());
+const jsonLinter = linter((view: EditorView): Diagnostic[] => {
+  const text = view.state.doc.toString().trim();
+  if (!text) return [];
+  return jsonParseLinter()(view);
+});
 const jsonMode = [json(), lintGutter(), jsonLinter];
 const yamlMode = [yamlLang(), lintGutter(), yamlLinter];
 const lightMode: [] = [];
