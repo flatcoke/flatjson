@@ -168,9 +168,8 @@ export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
       }),
     });
     viewRef.current = view;
-    (window as any).__cmView = view;
     if (initialLarge) onLargeFileRef.current?.(true);
-    return () => { view.destroy(); viewRef.current = null; (window as any).__cmView = null; };
+    return () => { view.destroy(); viewRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

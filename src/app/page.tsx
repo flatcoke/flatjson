@@ -75,6 +75,15 @@ function CopyBtn({ text }: { text: string }) {
   );
 }
 
+function PanelHeader({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
+  return (
+    <div className="px-3 py-1.5 bg-[#fafafa] border-b border-gray-200 text-xs text-gray-500 font-medium flex items-center justify-between">
+      <span>{children}</span>
+      {right}
+    </div>
+  );
+}
+
 export default function Home() {
   const [input, setInput] = useState(samples[DEFAULT_SAMPLE]);
   const [showTypes, setShowTypes] = useState(false);
@@ -114,8 +123,7 @@ export default function Home() {
   const formattedYaml = useMemo(() => {
     if (!parsed.ok || outputTab !== "yaml") return "";
     return YAML.stringify(parsed.data, { indent: 2 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsed, outputTab === "yaml"]);
+  }, [parsed, outputTab]);
 
   const treeDisabled = input.length > TREE_THRESHOLD;
 
@@ -232,15 +240,6 @@ export default function Home() {
           }
         />
       </div>
-    </div>
-  );
-}
-
-function PanelHeader({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
-  return (
-    <div className="px-3 py-1.5 bg-[#fafafa] border-b border-gray-200 text-xs text-gray-500 font-medium flex items-center justify-between">
-      <span>{children}</span>
-      {right}
     </div>
   );
 }

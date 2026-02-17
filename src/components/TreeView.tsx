@@ -62,6 +62,8 @@ function CopyButton({ path }: { path: string }) {
   );
 }
 
+const MAX_DEPTH = 20;
+
 const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes, showArrayIndex, isLast, colors, defaultCollapsed }: {
   keyName: string | number | null;
   value: JsonValue;
@@ -83,6 +85,21 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
     : typeof keyName === "number"
       ? (showArrayIndex ? <span className="text-[#666] mr-1">{keyName}: </span> : null)
       : <span style={{ color: colors.key }} className="mr-1">&quot;{keyName}&quot;: </span>;
+
+  if (depth >= MAX_DEPTH && expandable) {
+    const preview = type === "array"
+      ? `[…${(value as JsonValue[]).length} items]`
+      : `{…${Object.keys(value as Record<string, JsonValue>).length} keys}`;
+    return (
+      <div className="group flex items-center py-px hover:bg-[#f5f5f5]" style={pad}>
+        <span className="w-4 mr-0.5 shrink-0" />
+        {key}
+        <span className="text-gray-400 italic text-[11px]">{preview}</span>
+        <span>{comma}</span>
+        <CopyButton path={path} />
+      </div>
+    );
+  }
 
   if (!expandable) {
     return (

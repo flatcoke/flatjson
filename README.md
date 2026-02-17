@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# { flatJSON }
 
-## Getting Started
+> Fast, client-side JSON & YAML parser — no signup, no server, no tracking.
 
-First, run the development server:
+🔗 **[flatjson.dev](https://flatjson.dev)**
+
+## Features
+
+- **JSON & YAML** — auto-detects input format, parse both seamlessly
+- **Tree View** — interactive, collapsible nested structure with type badges
+- **Vim Mode** — full Vim keybindings via CodeMirror (`@replit/codemirror-vim`)
+- **Format / Minify** — one-click prettify or compact JSON
+- **JSON ↔ YAML** — convert between formats instantly
+- **Themes** — multiple color themes for the tree view
+- **Large File Support** — handles 1MB+ files with lite mode (virtualized rendering)
+- **100% Client-Side** — nothing leaves your browser. Ever.
+
+## Why flatJSON?
+
+There are plenty of JSON tools out there. flatJSON focuses on being **fast, keyboard-friendly, and private**:
+
+| | flatJSON | jsonlint.com | jsonformatter.org |
+|---|:---:|:---:|:---:|
+| Vim keybindings | ✅ | ❌ | ❌ |
+| YAML support | ✅ | ❌ | ❌ |
+| Tree view | ✅ | ❌ | ✅ |
+| No ads | ✅ | ❌ | ❌ |
+| No tracking | ✅ | ❌ | ❌ |
+| Large file handling | ✅ | ❌ | ❌ |
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org) (static export)
+- [CodeMirror 6](https://codemirror.net/) with Vim extension
+- [Tailwind CSS](https://tailwindcss.com)
+- Hosted on [Cloudflare Pages](https://pages.cloudflare.com)
+
+## Development
 
 ```bash
+git clone https://github.com/flatcoke/flatjson.git
+cd flatjson
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Issues and PRs welcome! If you find a bug or have a feature request, [open an issue](https://github.com/flatcoke/flatjson/issues).
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT © [flatcoke](https://github.com/flatcoke)
