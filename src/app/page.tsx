@@ -49,7 +49,15 @@ export default function Home() {
   const [input, setInput] = useState(samples[DEFAULT_SAMPLE]);
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);
-  const [vimMode, setVimMode] = useState(false);
+  const [vimMode, setVimMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("flatjson:vim") === "true";
+  });
+
+  function toggleVim(v: boolean) {
+    setVimMode(v);
+    localStorage.setItem("flatjson:vim", String(v));
+  }
 
   const parsed = useMemo(() => tryParse(input), [input]);
 
@@ -95,7 +103,7 @@ export default function Home() {
         showArrayIndex={showArrayIndex}
         onShowArrayIndexChange={setShowArrayIndex}
         vimMode={vimMode}
-        onVimModeChange={setVimMode}
+        onVimModeChange={toggleVim}
         onLoadSample={setInput}
       />
 
