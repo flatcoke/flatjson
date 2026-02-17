@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -8,6 +13,10 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+input[type="checkbox"]:checked {
+  accent-color: #4A0E8F;
 }
 
 /* CodeMirror container */

@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+
 export const metadata: Metadata = {
-  title: "FlatJSON — JSON Parser & Formatter",
+  title: "flatJSON — JSON Parser & Formatter",
   description: "Fast client-side JSON parser, formatter, and tree viewer",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+      <body className="antialiased font-sans font-light">{children}</body>
     </html>
   );
 }
