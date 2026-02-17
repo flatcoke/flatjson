@@ -141,4 +141,4 @@ export const samples: Record<string, string> = {
   }, null, 2),
 };
 
-export const DEFAULT_SAMPLE = "Simple Object";
+export const DEFAULT_SAMPLE = "Deep Nested";
