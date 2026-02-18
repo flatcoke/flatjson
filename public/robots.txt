@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://flatjson.dev/sitemap.xml
