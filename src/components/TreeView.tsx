@@ -42,7 +42,7 @@ function ValueSpan({ value, colors }: { value: JsonValue; colors: Record<string,
 function TypeBadge({ type, colors }: { type: string; colors: Record<string, string> }) {
   return (
     <span
-      className="ml-2 text-code-sm px-1 py-0.5 rounded border border-gray-200 bg-gray-50"
+      className="ml-2 text-code-sm px-1 py-0.5 rounded border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-surface"
       style={{ color: colors[type] ?? "var(--color-muted)" }}
     >
       {type}
@@ -101,7 +101,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
       ? `[…${(value as JsonValue[]).length} items]`
       : `{…${Object.keys(value as Record<string, JsonValue>).length} keys}`;
     return (
-      <div className="group flex items-center py-px hover:bg-surface" style={pad}>
+      <div className="group flex items-center py-px hover:bg-gray-50 dark:hover:bg-dark-btn-hover" style={pad}>
         <span className="w-4 mr-0.5 inline-flex items-center justify-center shrink-0" />
         {key}
         <span className="text-gray-400 italic text-code-sm">{preview}</span>
@@ -113,7 +113,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
 
   if (!expandable) {
     return (
-      <div className="group flex items-center py-px hover:bg-surface" style={pad}>
+      <div className="group flex items-center py-px hover:bg-gray-50 dark:hover:bg-dark-btn-hover" style={pad}>
         <span className="w-4 mr-0.5 inline-flex items-center justify-center shrink-0" />
         {key}
         <ValueSpan value={value} colors={colors} />
@@ -136,7 +136,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
   return (
     <div>
       <div
-        className="group flex items-center py-px hover:bg-surface cursor-pointer select-none"
+        className="group flex items-center py-px hover:bg-gray-50 dark:hover:bg-dark-btn-hover cursor-pointer select-none"
         style={pad}
         onClick={() => setCollapsed(c => !c)}
       >

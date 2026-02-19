@@ -9,14 +9,14 @@ import PanelHeader from "@/components/PanelHeader";
 import StatusLabel from "@/components/StatusLabel";
 import OutputPanel from "@/components/OutputPanel";
 import { samples, DEFAULT_SAMPLE } from "@/components/SampleData";
-import { themes, DEFAULT_THEME } from "@/components/themes";
+import { themes, getTheme, DEFAULT_THEME } from "@/components/themes";
 import { tryParse } from "@/lib/parser";
 
 const TREE_THRESHOLD = 1024 * 1024; // 1MB
 
 const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
   ssr: false,
-  loading: () => <div className="h-full flex items-center justify-center text-gray-400 text-sm">Loading editor…</div>,
+  loading: () => <div className="h-full flex items-center justify-center text-gray-400 dark:text-dark-text-muted text-sm">Loading editor…</div>,
 });
 
 type OutputTab = "tree" | "json" | "yaml";
@@ -28,6 +28,7 @@ export default function Home() {
   const [outputTab, setOutputTab] = useState<OutputTab>("tree");
   const [vimMode, setVimMode] = useState(false);
   const [themeName, setThemeName] = useState(DEFAULT_THEME);
+  const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [largeFile, setLargeFile] = useState(false);
 
@@ -39,6 +40,9 @@ export default function Home() {
       setInput(samples[DEFAULT_SAMPLE]);
       localStorage.setItem("flatjson:visited", "1");
     }
+    const dm = localStorage.getItem("flatjson:darkMode");
+    const isDark = dm === "true" || (dm === null && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    setDarkMode(isDark);
     setMounted(true);
   }, []);
 
@@ -52,7 +56,14 @@ export default function Home() {
     localStorage.setItem("flatjson:theme", t);
   }
 
-  const colorTheme = themes[themeName];
+  function toggleDarkMode() {
+    const next = !darkMode;
+    setDarkMode(next);
+    localStorage.setItem("flatjson:darkMode", String(next));
+    document.documentElement.classList.toggle("dark", next);
+  }
+
+  const colorTheme = getTheme(themeName, darkMode);
   const parsed = useMemo(() => tryParse(input), [input]);
 
   const formattedJson = useMemo(() => {
@@ -66,16 +77,23 @@ export default function Home() {
   }, [parsed, outputTab]);
 
   if (!mounted) {
-    return <div className="h-screen bg-white" />;
+    return <div className="h-screen bg-white dark:bg-dark-bg" />;
   }
 
   return (
-    <div className="h-screen flex flex-col bg-white">
-      <header className="flex items-baseline gap-2 px-4 py-2 border-b border-gray-200">
-        <h1 className="text-lg font-bold text-gray-800">
+    <div className="h-screen flex flex-col bg-white dark:bg-dark-bg text-gray-800 dark:text-dark-text">
+      <header className="flex items-baseline gap-2 px-4 py-2 border-b border-gray-200 dark:border-dark-border">
+        <h1 className="text-lg font-bold text-gray-800 dark:text-dark-text">
           <span className="text-brand font-mono logo-brace mr-0.5">{"{"}</span>flatJSON<span className="text-brand font-mono logo-brace ml-0.5">{"}"}</span>
         </h1>
-        <span className="text-xs text-gray-400 self-center">JSON & YAML Parser</span>
+        <span className="text-xs text-gray-400 dark:text-dark-text-muted self-center">JSON & YAML Parser</span>
+        <button
+          onClick={toggleDarkMode}
+          className="ml-auto self-center p-1.5 rounded text-sm transition-colors hover:bg-gray-200 dark:hover:bg-dark-btn-hover"
+          title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {darkMode ? "☀️" : "🌙"}
+        </button>
       </header>
 
       <Toolbar
@@ -97,7 +115,7 @@ export default function Home() {
       <div className="flex-1 min-h-0">
         <SplitPanel
           left={
-            <div className="h-full flex flex-col border-r border-gray-200">
+            <div className="h-full flex flex-col border-r border-gray-200 dark:border-dark-border">
               <PanelHeader right={<StatusLabel parsed={parsed} largeFile={largeFile} />}>Input</PanelHeader>
               <div className="flex-1 min-h-0">
                 <JsonEditor value={input} onChange={setInput} vimMode={vimMode} onLargeFile={setLargeFile} />

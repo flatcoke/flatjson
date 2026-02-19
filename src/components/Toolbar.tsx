@@ -26,10 +26,10 @@ function Btn({ children, active, disabled, ...props }: React.ButtonHTMLAttribute
       disabled={disabled}
       className={`px-3 py-1 text-xs font-medium rounded border transition-colors ${
         disabled
-          ? "bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed"
+          ? "bg-gray-100 dark:bg-dark-btn text-gray-300 dark:text-gray-600 border-gray-200 dark:border-dark-border cursor-not-allowed"
           : active
             ? "bg-brand text-white border-brand"
-            : "bg-white border-gray-300 hover:bg-gray-50 active:bg-gray-100"
+            : "bg-white dark:bg-dark-btn border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-btn-hover active:bg-gray-100 dark:active:bg-dark-btn-hover"
       }`}
     >
       {children}
@@ -38,7 +38,7 @@ function Btn({ children, active, disabled, ...props }: React.ButtonHTMLAttribute
 }
 
 function Sep() {
-  return <div className="w-px h-5 bg-gray-300" />;
+  return <div className="w-px h-5 bg-gray-300 dark:bg-dark-border" />;
 }
 
 export default function Toolbar({
@@ -57,18 +57,18 @@ export default function Toolbar({
   onLoadSample,
 }: ToolbarProps) {
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-surface border-b border-gray-200 flex-wrap">
+    <div className="flex items-center gap-3 px-4 py-2 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex-wrap">
       <Btn onClick={onFormat}>Format</Btn>
       <Btn onClick={onMinify} disabled={isYaml}>Minify</Btn>
       <Btn onClick={onClear}>Clear</Btn>
 
       <Sep />
 
-      <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+      <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-dark-text-secondary cursor-pointer">
         <input type="checkbox" checked={showTypes} onChange={e => onShowTypesChange(e.target.checked)} className="rounded accent-brand" />
         Types
       </label>
-      <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
+      <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-dark-text-secondary cursor-pointer">
         <input type="checkbox" checked={showArrayIndex} onChange={e => onShowArrayIndexChange(e.target.checked)} className="rounded accent-brand" />
         Array Index
       </label>
@@ -84,7 +84,7 @@ export default function Toolbar({
       <select
         value={theme}
         onChange={e => onThemeChange(e.target.value)}
-        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
+        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white dark:bg-dark-btn border border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text rounded hover:bg-gray-50 dark:hover:bg-dark-btn-hover cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
       >
         {Object.keys(themes).map(k => <option key={k} value={k}>{k}</option>)}
       </select>
@@ -94,7 +94,7 @@ export default function Toolbar({
       <select
         onChange={e => { if (e.target.value) onLoadSample(samples[e.target.value]); e.target.value = ""; }}
         defaultValue=""
-        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
+        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white dark:bg-dark-btn border border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text rounded hover:bg-gray-50 dark:hover:bg-dark-btn-hover cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
       >
         <option value="" disabled>Load Sample…</option>
         {Object.keys(samples).map(k => <option key={k} value={k}>{k}</option>)}

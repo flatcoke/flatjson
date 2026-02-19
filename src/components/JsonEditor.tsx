@@ -27,18 +27,18 @@ const highlighting = HighlightStyle.define([
   { tag: tags.squareBracket, color: "var(--color-muted)" },
 ]);
 
-const theme = EditorView.theme({
-  "&": { height: "100%", fontSize: "var(--text-code)", backgroundColor: "#fff" },
-  ".cm-content": { fontFamily: "var(--font-jetbrains), var(--font-pretendard), monospace", padding: "8px 0", fontWeight: "400" },
-  ".cm-gutters": { backgroundColor: "var(--color-surface)", borderRight: "1px solid var(--color-border)", color: "var(--color-muted)", fontWeight: "400" },
+const editorTheme = EditorView.theme({
+  "&": { height: "100%", fontSize: "var(--text-code)" },
+  ".cm-content": { fontFamily: "var(--font-jetbrains), var(--font-pretendard), monospace", padding: "8px 0", fontWeight: "400", color: "var(--color-editor-text)" },
+  ".cm-gutters": { borderRight: "1px solid var(--color-border)", color: "var(--color-muted)", fontWeight: "400" },
   ".cm-activeLineGutter": { backgroundColor: "var(--color-active-gutter)" },
   ".cm-activeLine": { backgroundColor: "var(--color-active-line)" },
   ".cm-selectionMatch": { backgroundColor: "var(--color-selection-match)" },
-  ".cm-cursor": { borderLeftColor: "var(--color-cursor)" },
+  ".cm-cursor": { borderLeftColor: "var(--color-editor-text)" },
   "&.cm-focused .cm-selectionBackground, ::selection": { backgroundColor: "var(--color-selection)" },
-  ".cm-fat-cursor": { backgroundColor: "rgba(0,0,0,0.3) !important", color: "transparent !important" },
-  "&:not(.cm-focused) .cm-fat-cursor": { backgroundColor: "transparent !important", outline: "solid 1px rgba(0,0,0,0.3)" },
-  ".cm-vim-panel": { backgroundColor: "var(--color-surface)", borderTop: "1px solid var(--color-border)", padding: "2px 8px", fontFamily: "monospace", fontSize: "var(--text-code)" },
+  ".cm-fat-cursor": { backgroundColor: "rgba(128,128,128,0.4) !important", color: "transparent !important" },
+  "&:not(.cm-focused) .cm-fat-cursor": { backgroundColor: "transparent !important", outline: "solid 1px rgba(128,128,128,0.4)" },
+  ".cm-vim-panel": { borderTop: "1px solid var(--color-border)", padding: "2px 8px", fontFamily: "monospace", fontSize: "var(--text-code)", color: "var(--color-editor-text)" },
 });
 
 function isLikelyYaml(text: string): boolean {
@@ -135,7 +135,7 @@ export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
           history(),
           langComp.current.of(initialLarge ? lightMode : (initialYaml ? yamlMode : jsonMode)),
           heavyComp.current.of(initialLarge ? lightMode : heavyExtensions()),
-          theme,
+          editorTheme,
           keymap.of([
             ...defaultKeymap,
             ...historyKeymap,

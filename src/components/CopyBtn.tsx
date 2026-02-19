@@ -15,7 +15,7 @@ export default function CopyBtn({ text }: { text: string }) {
   return (
     <button
       onClick={copy}
-      className="p-1 rounded hover:bg-gray-200 active:bg-gray-300 transition-colors text-gray-400 hover:text-gray-600"
+      className="p-1 rounded transition-colors text-gray-400 dark:text-dark-text-muted hover:bg-gray-200 dark:hover:bg-dark-btn-hover hover:text-gray-600 dark:hover:text-dark-text-secondary active:bg-gray-300 dark:active:bg-dark-btn"
       title="Copy"
     >
       {copied ? (

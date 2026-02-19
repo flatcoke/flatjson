@@ -1,20 +1,47 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --color-brand: #4A0E8F;
   --color-surface: #fafafa;
+  --color-surface-dark: #242424;
   --color-muted: #999;
   --color-border: #e0e0e0;
   --color-cursor: #333;
-  --color-editor-text: #5c6166;
-  --color-active-line: #f8f4fc;
-  --color-active-gutter: #f0e6fa;
-  --color-selection: #d4c4f0;
-  --color-selection-match: #e0cff5;
   --text-code: 12px;
   --text-code-sm: 10px;
+
+  /* Dark theme tokens */
+  --color-dark-bg: #1a1a1a;
+  --color-dark-surface: #242424;
+  --color-dark-btn: #2a2a2a;
+  --color-dark-btn-hover: #333333;
+  --color-dark-border: #333333;
+  --color-dark-border-btn: #444444;
+  --color-dark-text: #e5e7eb;
+  --color-dark-text-secondary: #9ca3af;
+  --color-dark-text-muted: #6b7280;
+}
+
+@layer base {
+  :root {
+    --color-active-line: #f8f4fc;
+    --color-active-gutter: #f0e6fa;
+    --color-selection: #d4c4f0;
+    --color-selection-match: #e0cff5;
+    --color-editor-text: #5c6166;
+  }
+
+  .dark {
+    --color-active-line: rgba(74, 14, 143, 0.1);
+    --color-active-gutter: rgba(74, 14, 143, 0.15);
+    --color-selection: rgba(74, 14, 143, 0.3);
+    --color-selection-match: rgba(74, 14, 143, 0.2);
+    --color-editor-text: #b0b8c4;
+  }
 }
 
 * {

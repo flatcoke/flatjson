@@ -59,7 +59,6 @@ export default function SplitPanel({ left, right }: SplitPanelProps) {
     };
   }, [isMobile]);
 
-  // Touch support for mobile
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -94,19 +93,17 @@ export default function SplitPanel({ left, right }: SplitPanelProps) {
     setIsDragging(true);
   }, []);
 
+  const dividerCls = `flex-shrink-0 transition-colors ${
+    isDragging ? "bg-brand" : "bg-gray-200 dark:bg-dark-border hover:bg-brand"
+  }`;
+
   if (isMobile) {
     return (
       <div ref={containerRef} className="flex flex-col h-full w-full">
         <div className="overflow-hidden" style={{ height: `${ratio * 100}%`, minHeight: 0 }}>
           {left}
         </div>
-        <div
-          onMouseDown={onMouseDown}
-          onTouchStart={onTouchStart}
-          className={`flex-shrink-0 h-1.5 transition-colors cursor-row-resize ${
-            isDragging ? "bg-brand" : "bg-gray-200 hover:bg-brand"
-          }`}
-        />
+        <div onMouseDown={onMouseDown} onTouchStart={onTouchStart} className={`${dividerCls} h-1.5 cursor-row-resize`} />
         <div className="overflow-hidden flex-1" style={{ minHeight: 0 }}>
           {right}
         </div>
@@ -119,13 +116,7 @@ export default function SplitPanel({ left, right }: SplitPanelProps) {
       <div className="overflow-hidden" style={{ width: `${ratio * 100}%`, minWidth: 0 }}>
         {left}
       </div>
-      <div
-        onMouseDown={onMouseDown}
-        onTouchStart={onTouchStart}
-        className={`flex-shrink-0 w-1.5 transition-colors cursor-col-resize ${
-          isDragging ? "bg-brand" : "bg-gray-200 hover:bg-brand"
-        }`}
-      />
+      <div onMouseDown={onMouseDown} onTouchStart={onTouchStart} className={`${dividerCls} w-1.5 cursor-col-resize`} />
       <div className="overflow-hidden flex-1" style={{ minWidth: 0 }}>
         {right}
       </div>
