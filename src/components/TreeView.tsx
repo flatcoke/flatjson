@@ -42,8 +42,8 @@ function ValueSpan({ value, colors }: { value: JsonValue; colors: Record<string,
 function TypeBadge({ type, colors }: { type: string; colors: Record<string, string> }) {
   return (
     <span
-      className="ml-2 text-[10px] px-1 py-0.5 rounded border border-gray-200 bg-gray-50"
-      style={{ color: colors[type] ?? "#555" }}
+      className="ml-2 text-code-sm px-1 py-0.5 rounded border border-gray-200 bg-gray-50"
+      style={{ color: colors[type] ?? "var(--color-muted)" }}
     >
       {type}
     </span>
@@ -64,7 +64,7 @@ function CopyButton({ path }: { path: string }) {
   return (
     <button
       onClick={copy}
-      className={`ml-2 text-[10px] ${copied ? "text-green-500 opacity-100" : "opacity-0 group-hover:opacity-100 group-hover:transition-opacity text-gray-400 hover:text-[#4A0E8F]"}`}
+      className={`ml-2 text-code-sm ${copied ? "text-green-500 opacity-100" : "opacity-0 group-hover:opacity-100 group-hover:transition-opacity text-gray-400 hover:text-brand"}`}
       title={path}
     >
       {copied ? <span className="font-bold">Copied!</span> : "📋"}
@@ -93,7 +93,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
 
   const key = keyName === null ? null
     : typeof keyName === "number"
-      ? (showArrayIndex ? <span className="text-[#666] mr-1">{keyName}: </span> : null)
+      ? (showArrayIndex ? <span className="text-muted mr-1">{keyName}: </span> : null)
       : <span style={{ color: colors.key }} className="mr-1">&quot;{keyName}&quot;: </span>;
 
   if (depth >= MAX_DEPTH && expandable) {
@@ -101,10 +101,10 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
       ? `[…${(value as JsonValue[]).length} items]`
       : `{…${Object.keys(value as Record<string, JsonValue>).length} keys}`;
     return (
-      <div className="group flex items-center py-px hover:bg-[#f5f5f5]" style={pad}>
-        <span className="w-4 mr-0.5 shrink-0" />
+      <div className="group flex items-center py-px hover:bg-surface" style={pad}>
+        <span className="w-4 mr-0.5 inline-flex items-center justify-center shrink-0" />
         {key}
-        <span className="text-gray-400 italic text-[11px]">{preview}</span>
+        <span className="text-gray-400 italic text-code-sm">{preview}</span>
         <span>{comma}</span>
         <CopyButton path={path} />
       </div>
@@ -113,8 +113,8 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
 
   if (!expandable) {
     return (
-      <div className="group flex items-center py-px hover:bg-[#f5f5f5]" style={pad}>
-        <span className="w-4 mr-0.5 shrink-0" />
+      <div className="group flex items-center py-px hover:bg-surface" style={pad}>
+        <span className="w-4 mr-0.5 inline-flex items-center justify-center shrink-0" />
         {key}
         <ValueSpan value={value} colors={colors} />
         <span>{comma}</span>
@@ -136,7 +136,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
   return (
     <div>
       <div
-        className="group flex items-center py-px hover:bg-[#f5f5f5] cursor-pointer select-none"
+        className="group flex items-center py-px hover:bg-surface cursor-pointer select-none"
         style={pad}
         onClick={() => setCollapsed(c => !c)}
       >
@@ -151,7 +151,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
           <>
             <span className="text-gray-400 mx-0.5">…</span>
             <span>{close}</span>
-            <span className="text-gray-400 ml-1 text-[11px] italic">{countLabel}</span>
+            <span className="text-gray-400 ml-1 text-code-sm italic">{countLabel}</span>
             <span>{comma}</span>
           </>
         )}
@@ -175,7 +175,7 @@ const TreeNode = memo(function TreeNode({ keyName, value, path, depth, showTypes
             />
           ))}
           <div className="py-px" style={pad}>
-            <span className="w-4 inline-block mr-0.5 shrink-0" />
+            <span className="w-4 inline-flex items-center justify-center mr-0.5 shrink-0" />
             <span>{close}{comma}</span>
           </div>
         </>
@@ -196,7 +196,7 @@ export default function TreeView({ data, showTypes, showArrayIndex, colorTheme, 
   const colors = typeColors(colorTheme);
   const shouldCollapse = inputSize > COLLAPSE_THRESHOLD;
   return (
-    <div className="font-mono text-[12px] font-normal p-3 h-full overflow-auto" style={{ minHeight: 0 }}>
+    <div className="font-mono text-code font-normal p-3 h-full overflow-auto min-h-0">
       <TreeNode
         keyName={null}
         value={data as JsonValue}

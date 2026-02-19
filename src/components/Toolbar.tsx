@@ -28,7 +28,7 @@ function Btn({ children, active, disabled, ...props }: React.ButtonHTMLAttribute
         disabled
           ? "bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed"
           : active
-            ? "bg-[#4A0E8F] text-white border-[#4A0E8F]"
+            ? "bg-brand text-white border-brand"
             : "bg-white border-gray-300 hover:bg-gray-50 active:bg-gray-100"
       }`}
     >
@@ -57,7 +57,7 @@ export default function Toolbar({
   onLoadSample,
 }: ToolbarProps) {
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-[#f8f9fa] border-b border-gray-200 flex-wrap">
+    <div className="flex items-center gap-3 px-4 py-2 bg-surface border-b border-gray-200 flex-wrap">
       <Btn onClick={onFormat}>Format</Btn>
       <Btn onClick={onMinify} disabled={isYaml}>Minify</Btn>
       <Btn onClick={onClear}>Clear</Btn>
@@ -65,11 +65,11 @@ export default function Toolbar({
       <Sep />
 
       <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
-        <input type="checkbox" checked={showTypes} onChange={e => onShowTypesChange(e.target.checked)} className="rounded accent-[#4A0E8F]" />
+        <input type="checkbox" checked={showTypes} onChange={e => onShowTypesChange(e.target.checked)} className="rounded accent-brand" />
         Types
       </label>
       <label className="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
-        <input type="checkbox" checked={showArrayIndex} onChange={e => onShowArrayIndexChange(e.target.checked)} className="rounded accent-[#4A0E8F]" />
+        <input type="checkbox" checked={showArrayIndex} onChange={e => onShowArrayIndexChange(e.target.checked)} className="rounded accent-brand" />
         Array Index
       </label>
 
@@ -84,7 +84,7 @@ export default function Toolbar({
       <select
         value={theme}
         onChange={e => onThemeChange(e.target.value)}
-        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
+        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
       >
         {Object.keys(themes).map(k => <option key={k} value={k}>{k}</option>)}
       </select>
@@ -94,7 +94,7 @@ export default function Toolbar({
       <select
         onChange={e => { if (e.target.value) onLoadSample(samples[e.target.value]); e.target.value = ""; }}
         defaultValue=""
-        className="px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
+        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
       >
         <option value="" disabled>Load Sample…</option>
         {Object.keys(samples).map(k => <option key={k} value={k}>{k}</option>)}

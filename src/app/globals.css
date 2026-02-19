@@ -3,10 +3,27 @@
 @theme {
   --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --color-brand: #4A0E8F;
+  --color-surface: #fafafa;
+  --color-muted: #999;
+  --color-border: #e0e0e0;
+  --color-cursor: #333;
+  --color-editor-text: #5c6166;
+  --color-active-line: #f8f4fc;
+  --color-active-gutter: #f0e6fa;
+  --color-selection: #d4c4f0;
+  --color-selection-match: #e0cff5;
+  --text-code: 12px;
+  --text-code-sm: 10px;
 }
 
 * {
   box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
 }
 
 body {
@@ -16,7 +33,7 @@ body {
 }
 
 input[type="checkbox"]:checked {
-  accent-color: #4A0E8F;
+  accent-color: var(--color-brand);
 }
 
 /* CodeMirror container */

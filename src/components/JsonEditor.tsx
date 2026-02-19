@@ -17,28 +17,28 @@ import { parse as parseYaml, YAMLParseError } from "yaml";
 const LARGE_THRESHOLD = 5 * 1024 * 1024; // 5MB
 
 const highlighting = HighlightStyle.define([
-  { tag: tags.propertyName, color: "#5c6166" },
-  { tag: tags.string, color: "#5c6166" },
-  { tag: tags.number, color: "#5c6166" },
-  { tag: tags.bool, color: "#5c6166" },
-  { tag: tags.null, color: "#999" },
-  { tag: tags.punctuation, color: "#999" },
-  { tag: tags.brace, color: "#999" },
-  { tag: tags.squareBracket, color: "#999" },
+  { tag: tags.propertyName, color: "var(--color-editor-text)" },
+  { tag: tags.string, color: "var(--color-editor-text)" },
+  { tag: tags.number, color: "var(--color-editor-text)" },
+  { tag: tags.bool, color: "var(--color-editor-text)" },
+  { tag: tags.null, color: "var(--color-muted)" },
+  { tag: tags.punctuation, color: "var(--color-muted)" },
+  { tag: tags.brace, color: "var(--color-muted)" },
+  { tag: tags.squareBracket, color: "var(--color-muted)" },
 ]);
 
 const theme = EditorView.theme({
-  "&": { height: "100%", fontSize: "12px", backgroundColor: "#fff" },
+  "&": { height: "100%", fontSize: "var(--text-code)", backgroundColor: "#fff" },
   ".cm-content": { fontFamily: "var(--font-jetbrains), var(--font-pretendard), monospace", padding: "8px 0", fontWeight: "400" },
-  ".cm-gutters": { backgroundColor: "#f8f9fa", borderRight: "1px solid #e0e0e0", color: "#999", fontWeight: "400" },
-  ".cm-activeLineGutter": { backgroundColor: "#f0e6fa" },
-  ".cm-activeLine": { backgroundColor: "#f8f4fc" },
-  ".cm-selectionMatch": { backgroundColor: "#e0cff5" },
-  ".cm-cursor": { borderLeftColor: "#333" },
-  "&.cm-focused .cm-selectionBackground, ::selection": { backgroundColor: "#d4c4f0" },
+  ".cm-gutters": { backgroundColor: "var(--color-surface)", borderRight: "1px solid var(--color-border)", color: "var(--color-muted)", fontWeight: "400" },
+  ".cm-activeLineGutter": { backgroundColor: "var(--color-active-gutter)" },
+  ".cm-activeLine": { backgroundColor: "var(--color-active-line)" },
+  ".cm-selectionMatch": { backgroundColor: "var(--color-selection-match)" },
+  ".cm-cursor": { borderLeftColor: "var(--color-cursor)" },
+  "&.cm-focused .cm-selectionBackground, ::selection": { backgroundColor: "var(--color-selection)" },
   ".cm-fat-cursor": { backgroundColor: "rgba(0,0,0,0.3) !important", color: "transparent !important" },
   "&:not(.cm-focused) .cm-fat-cursor": { backgroundColor: "transparent !important", outline: "solid 1px rgba(0,0,0,0.3)" },
-  ".cm-vim-panel": { backgroundColor: "#f8f9fa", borderTop: "1px solid #e0e0e0", padding: "2px 8px", fontFamily: "monospace", fontSize: "12px" },
+  ".cm-vim-panel": { backgroundColor: "var(--color-surface)", borderTop: "1px solid var(--color-border)", padding: "2px 8px", fontFamily: "monospace", fontSize: "var(--text-code)" },
 });
 
 function isLikelyYaml(text: string): boolean {
@@ -206,5 +206,5 @@ export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
     view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value }, effects });
   }, [value]);
 
-  return <div ref={containerRef} className="h-full overflow-auto" style={{ minHeight: 0 }} />;
+  return <div ref={containerRef} className="h-full overflow-auto min-h-0" />;
 }
