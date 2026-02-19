@@ -40,7 +40,7 @@ async function main() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#1a1a1a",
+          backgroundColor: "#fafafa",
         },
         children: [
           {
@@ -51,7 +51,7 @@ async function main() {
                 alignItems: "center",
                 fontSize: 72,
                 fontWeight: 700,
-                color: "#e5e5e5",
+                color: "#1f2937",
                 letterSpacing: "-1px",
               },
               children: [
@@ -85,7 +85,7 @@ async function main() {
               style: {
                 marginTop: "16px",
                 fontSize: 28,
-                color: "#9ca3af",
+                color: "#6b7280",
                 fontWeight: 400,
                 fontFamily: "Inter",
                 letterSpacing: "0.5px",
@@ -108,7 +108,7 @@ async function main() {
   );
 
   const png = await sharp(Buffer.from(svg)).jpeg({ quality: 90 }).toBuffer();
-  const outPath = join(root, "public", "og.jpg");
+  const outPath = join(root, "public", "og-light.jpg");
   writeFileSync(outPath, png);
   console.log(`✅ Generated ${outPath} (${png.length} bytes)`);
 }
