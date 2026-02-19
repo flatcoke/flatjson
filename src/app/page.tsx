@@ -216,7 +216,7 @@ export default function Home() {
                     )
                   ) : (
                     largeFile ? (
-                      <pre className="p-4 text-[12px] font-mono font-light whitespace-pre-wrap text-gray-700" style={{ minHeight: 0 }}>
+                      <pre className="p-4 text-[12px] font-mono font-normal whitespace-pre-wrap text-gray-700" style={{ minHeight: 0 }}>
                         {outputTab === "json" ? formattedJson : formattedYaml}
                       </pre>
                     ) : (

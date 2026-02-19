@@ -196,7 +196,7 @@ export default function TreeView({ data, showTypes, showArrayIndex, colorTheme, 
   const colors = typeColors(colorTheme);
   const shouldCollapse = inputSize > COLLAPSE_THRESHOLD;
   return (
-    <div className="font-mono text-[12px] font-light p-3 h-full overflow-auto" style={{ minHeight: 0 }}>
+    <div className="font-mono text-[12px] font-normal p-3 h-full overflow-auto" style={{ minHeight: 0 }}>
       <TreeNode
         keyName={null}
         value={data as JsonValue}

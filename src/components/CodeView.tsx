@@ -97,7 +97,7 @@ export default function CodeView({ text, mode, theme }: {
   );
 
   return (
-    <pre className="p-4 text-[12px] font-mono font-light whitespace-pre-wrap" style={{ minHeight: 0 }}>
+    <pre className="p-4 text-[12px] font-mono font-normal whitespace-pre-wrap" style={{ minHeight: 0 }}>
       {colored}
     </pre>
   );

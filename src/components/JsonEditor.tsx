@@ -29,8 +29,8 @@ const highlighting = HighlightStyle.define([
 
 const theme = EditorView.theme({
   "&": { height: "100%", fontSize: "12px", backgroundColor: "#fff" },
-  ".cm-content": { fontFamily: "var(--font-jetbrains), monospace", padding: "8px 0", fontWeight: "300" },
-  ".cm-gutters": { backgroundColor: "#f8f9fa", borderRight: "1px solid #e0e0e0", color: "#999", fontWeight: "300" },
+  ".cm-content": { fontFamily: "var(--font-jetbrains), var(--font-pretendard), monospace", padding: "8px 0", fontWeight: "400" },
+  ".cm-gutters": { backgroundColor: "#f8f9fa", borderRight: "1px solid #e0e0e0", color: "#999", fontWeight: "400" },
   ".cm-activeLineGutter": { backgroundColor: "#f0e6fa" },
   ".cm-activeLine": { backgroundColor: "#f8f4fc" },
   ".cm-selectionMatch": { backgroundColor: "#e0cff5" },
