@@ -30,7 +30,7 @@ const highlighting = HighlightStyle.define([
 const editorTheme = EditorView.theme({
   "&": { height: "100%", fontSize: "var(--text-code)" },
   ".cm-content": { fontFamily: "var(--font-jetbrains), var(--font-pretendard), monospace", padding: "8px 0", fontWeight: "400", color: "var(--color-editor-text)" },
-  ".cm-gutters": { borderRight: "1px solid var(--color-border)", color: "var(--color-muted)", fontWeight: "400" },
+  ".cm-gutters": { borderRight: "1px solid var(--color-border)", color: "var(--color-muted)", fontWeight: "400", backgroundColor: "transparent" },
   ".cm-activeLineGutter": { backgroundColor: "var(--color-active-gutter)" },
   ".cm-activeLine": { backgroundColor: "var(--color-active-line)" },
   ".cm-selectionMatch": { backgroundColor: "var(--color-selection-match)" },

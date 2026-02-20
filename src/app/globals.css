@@ -41,6 +41,7 @@
     --color-selection: rgba(74, 14, 143, 0.3);
     --color-selection-match: rgba(74, 14, 143, 0.2);
     --color-editor-text: #b0b8c4;
+    --color-border: #333333;
   }
 }
 
