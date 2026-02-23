@@ -151,6 +151,7 @@ export default function Home() {
           right={
             <OutputPanel
               parsed={parsed}
+              input={input}
               outputTab={outputTab}
               onTabChange={setOutputTab}
               formattedJson={formattedJson}

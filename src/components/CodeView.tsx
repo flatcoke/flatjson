@@ -8,7 +8,7 @@ import type { ColorTheme } from "./themes";
 // Not a full parser — edge cases (e.g. colons inside strings) may mis-color.
 // This is intentional: the output is always pretty-printed by JSON.stringify / YAML.stringify,
 // so the structured format keeps the regex reliable for display purposes.
-function colorizeJson(text: string, theme: ColorTheme): React.ReactNode[] {
+export function colorizeJson(text: string, theme: ColorTheme): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   let i = 0;
 

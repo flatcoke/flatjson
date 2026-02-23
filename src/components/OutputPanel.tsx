@@ -3,6 +3,7 @@
 import TreeView from "./TreeView";
 import CodeView from "./CodeView";
 import CopyBtn from "./CopyBtn";
+import { colorizeJson } from "./CodeView";
 import type { ColorTheme } from "./themes";
 import type { ParseResult } from "@/lib/parser";
 
@@ -10,6 +11,7 @@ type OutputTab = "tree" | "json" | "yaml";
 
 interface OutputPanelProps {
   parsed: ParseResult;
+  input: string;
   outputTab: OutputTab;
   onTabChange: (tab: OutputTab) => void;
   formattedJson: string;
@@ -24,6 +26,7 @@ interface OutputPanelProps {
 
 export default function OutputPanel({
   parsed,
+  input,
   outputTab,
   onTabChange,
   formattedJson,
@@ -88,11 +91,17 @@ export default function OutputPanel({
             Paste JSON or YAML in the editor
           </div>
         ) : (
-          <div className="p-4">
-            <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
-              <p className="text-red-700 dark:text-red-400 text-sm font-medium">Parse Error</p>
-              <p className="text-red-600 dark:text-red-300 text-xs font-mono mt-1">{parsed.error}</p>
+          <div className="h-full flex flex-col">
+            <div className="px-3 py-2 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 shrink-0">
+              <p className="text-red-600 dark:text-red-400 text-xs font-mono truncate" title={parsed.error}>⚠ {parsed.error}</p>
             </div>
+            {parsed.position !== undefined && input.trim() ? (
+              <pre className="flex-1 px-4 pb-4 text-code font-mono font-normal whitespace-pre-wrap overflow-auto min-h-0">
+                {colorizeJson(input.trim().slice(0, parsed.position), colorTheme)}
+                <span className="bg-black/80 text-white dark:bg-white/90 dark:text-black rounded-sm px-0.5">{input.trim().slice(parsed.position, parsed.position + 1) || "⌁"}</span>
+                <span className="text-gray-400 dark:text-gray-600">{input.trim().slice(parsed.position + 1)}</span>
+              </pre>
+            ) : null}
           </div>
         )}
       </div>
