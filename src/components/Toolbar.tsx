@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { samples } from "./SampleData";
-import { themes } from "./themes";
+import { themes, getTheme } from "./themes";
 
 interface ToolbarProps {
   onFormat: () => void;
@@ -14,22 +15,23 @@ interface ToolbarProps {
   onShowArrayIndexChange: (v: boolean) => void;
   vimMode: boolean;
   onVimModeChange: (v: boolean) => void;
+  history: boolean;
+  onHistoryChange: (v: boolean) => void;
   theme: string;
+  darkMode: boolean;
   onThemeChange: (t: string) => void;
   onLoadSample: (json: string) => void;
 }
 
-function Btn({ children, active, disabled, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+function Btn({ children, disabled, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
       disabled={disabled}
-      className={`px-3 py-1 text-xs font-medium rounded border transition-colors ${
+      className={`px-3 py-1 text-xs font-medium rounded border transition-all ${
         disabled
           ? "bg-gray-100 dark:bg-dark-btn text-gray-300 dark:text-gray-600 border-gray-200 dark:border-dark-border cursor-not-allowed"
-          : active
-            ? "bg-brand text-white border-brand"
-            : "bg-white dark:bg-dark-btn border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-btn-hover active:bg-gray-100 dark:active:bg-dark-btn-hover"
+          : "bg-white dark:bg-dark-btn border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text hover:bg-gray-50 dark:hover:bg-dark-btn-hover active:scale-95 active:bg-gray-200 dark:active:bg-dark-btn-hover"
       }`}
     >
       {children}
@@ -39,6 +41,82 @@ function Btn({ children, active, disabled, ...props }: React.ButtonHTMLAttribute
 
 function Sep() {
   return <div className="w-px h-5 bg-gray-300 dark:bg-dark-border" />;
+}
+
+const activeDropdown = { close: null as (() => void) | null };
+
+function useDropdown() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  function toggle() {
+    if (open) {
+      setOpen(false);
+      activeDropdown.close = null;
+    } else {
+      activeDropdown.close?.();
+      setOpen(true);
+      activeDropdown.close = () => setOpen(false);
+    }
+  }
+
+  return { open, toggle, ref };
+}
+
+const menuClass = "absolute left-1/2 -translate-x-1/4 top-full mt-0.5 z-50 min-w-[220px] py-1 bg-[#2b2b3d] border border-[#3d3d5c] rounded-md shadow-xl backdrop-blur";
+const menuItemClass = "w-full px-3 py-1 text-[13px] text-left flex items-center gap-2 hover:bg-[#3478f6] hover:text-white text-gray-200 transition-colors";
+
+function DropdownMenu({ label, items, closeOnSelect = false }: {
+  label: string;
+  items: ({ label: string; checked?: boolean; desc?: string; colors?: string[]; onSelect: () => void } | "divider")[];
+  closeOnSelect?: boolean;
+}) {
+  const { open, toggle, ref } = useDropdown();
+
+  return (
+    <div className="relative" ref={ref}>
+      <Btn onClick={toggle}>{label} ▾</Btn>
+      {open && (
+        <div className={menuClass}>
+          {items.map((item, i) =>
+            item === "divider" ? (
+              <div key={`div-${i}`} className="my-1 border-t border-[#3d3d5c]" />
+            ) : (
+              <button
+                key={item.label}
+                onClick={() => { item.onSelect(); if (closeOnSelect) toggle(); }}
+                className={menuItemClass}
+              >
+                <span className="w-4 text-center shrink-0">{item.checked !== undefined ? (item.checked ? "✓" : "") : ""}</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    {item.label}
+                    {item.colors && (
+                      <span className="flex gap-0.5">
+                        {item.colors.map((c, i) => (
+                          <span key={i} className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c }} />
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  {item.desc && <div className="text-[11px] text-gray-400 font-normal">{item.desc}</div>}
+                </div>
+              </button>
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Toolbar({
@@ -52,7 +130,10 @@ export default function Toolbar({
   onShowArrayIndexChange,
   vimMode,
   onVimModeChange,
+  history,
+  onHistoryChange,
   theme,
+  darkMode,
   onThemeChange,
   onLoadSample,
 }: ToolbarProps) {
@@ -64,41 +145,41 @@ export default function Toolbar({
 
       <Sep />
 
-      <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-dark-text-secondary cursor-pointer">
-        <input type="checkbox" checked={showTypes} onChange={e => onShowTypesChange(e.target.checked)} className="rounded accent-brand" />
-        Types
-      </label>
-      <label className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-dark-text-secondary cursor-pointer">
-        <input type="checkbox" checked={showArrayIndex} onChange={e => onShowArrayIndexChange(e.target.checked)} className="rounded accent-brand" />
-        Array Index
-      </label>
+      <DropdownMenu
+        label={theme}
+        closeOnSelect
+        items={Object.keys(themes).map(k => {
+          const t = getTheme(k, darkMode);
+          return {
+            label: k,
+            checked: theme === k,
+            colors: [t.key, t.string, t.number],
+            onSelect: () => onThemeChange(k),
+          };
+        })}
+      />
+
+      <DropdownMenu
+        label="Sample"
+        closeOnSelect
+        items={Object.keys(samples).map(k => ({
+          label: k,
+          onSelect: () => onLoadSample(samples[k]),
+        }))}
+      />
 
       <Sep />
 
-      <Btn active={vimMode} onClick={() => onVimModeChange(!vimMode)} title="Toggle Vim keybindings">
-        Vim
-      </Btn>
-
-      <Sep />
-
-      <select
-        value={theme}
-        onChange={e => onThemeChange(e.target.value)}
-        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white dark:bg-dark-btn border border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text rounded hover:bg-gray-50 dark:hover:bg-dark-btn-hover cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
-      >
-        {Object.keys(themes).map(k => <option key={k} value={k}>{k}</option>)}
-      </select>
-
-      <Sep />
-
-      <select
-        onChange={e => { if (e.target.value) onLoadSample(samples[e.target.value]); e.target.value = ""; }}
-        defaultValue=""
-        className="appearance-none pl-2 pr-6 py-1 text-xs bg-white dark:bg-dark-btn border border-gray-300 dark:border-dark-border-btn text-gray-800 dark:text-dark-text rounded hover:bg-gray-50 dark:hover:bg-dark-btn-hover cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%3E%3Cpath%20d%3D%22M0%200l5%206%205-6z%22%20fill%3D%22%23666%22/%3E%3C/svg%3E')] bg-[length:10px_6px] bg-[position:right_6px_center] bg-no-repeat"
-      >
-        <option value="" disabled>Load Sample…</option>
-        {Object.keys(samples).map(k => <option key={k} value={k}>{k}</option>)}
-      </select>
+      <DropdownMenu
+        label="Options"
+        items={[
+          { label: "Vim", desc: "Vim keybindings in editor", checked: vimMode, onSelect: () => onVimModeChange(!vimMode) },
+          { label: "History", desc: "Auto-save edit history", checked: history, onSelect: () => onHistoryChange(!history) },
+          "divider",
+          { label: "Types", desc: "Show type badges in tree", checked: showTypes, onSelect: () => onShowTypesChange(!showTypes) },
+          { label: "Array Index", desc: "Show array indices in tree", checked: showArrayIndex, onSelect: () => onShowArrayIndexChange(!showArrayIndex) },
+        ]}
+      />
     </div>
   );
 }

@@ -27,6 +27,7 @@ export default function Home() {
   const [showArrayIndex, setShowArrayIndex] = useState(true);
   const [outputTab, setOutputTab] = useState<OutputTab>("tree");
   const [vimMode, setVimMode] = useState(false);
+  const [history, setHistory] = useState(false);
   const [themeName, setThemeName] = useState(DEFAULT_THEME);
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -107,7 +108,10 @@ export default function Home() {
         onShowArrayIndexChange={setShowArrayIndex}
         vimMode={vimMode}
         onVimModeChange={toggleVim}
+        history={history}
+        onHistoryChange={setHistory}
         theme={themeName}
+        darkMode={darkMode}
         onThemeChange={changeTheme}
         onLoadSample={setInput}
       />
