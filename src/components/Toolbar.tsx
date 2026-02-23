@@ -15,8 +15,6 @@ interface ToolbarProps {
   onShowArrayIndexChange: (v: boolean) => void;
   vimMode: boolean;
   onVimModeChange: (v: boolean) => void;
-  history: boolean;
-  onHistoryChange: (v: boolean) => void;
   theme: string;
   darkMode: boolean;
   onThemeChange: (t: string) => void;
@@ -130,8 +128,6 @@ export default function Toolbar({
   onShowArrayIndexChange,
   vimMode,
   onVimModeChange,
-  history,
-  onHistoryChange,
   theme,
   darkMode,
   onThemeChange,
@@ -174,7 +170,6 @@ export default function Toolbar({
         label="Options"
         items={[
           { label: "Vim", desc: "Vim keybindings in editor", checked: vimMode, onSelect: () => onVimModeChange(!vimMode) },
-          { label: "History", desc: "Auto-save edit history", checked: history, onSelect: () => onHistoryChange(!history) },
           "divider",
           { label: "Types", desc: "Show type badges in tree", checked: showTypes, onSelect: () => onShowTypesChange(!showTypes) },
           { label: "Array Index", desc: "Show array indices in tree", checked: showArrayIndex, onSelect: () => onShowArrayIndexChange(!showArrayIndex) },

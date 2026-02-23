@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import YAML from "yaml";
 import Toolbar from "@/components/Toolbar";
@@ -12,7 +12,9 @@ import { samples, DEFAULT_SAMPLE } from "@/components/SampleData";
 import { themes, getTheme, DEFAULT_THEME } from "@/components/themes";
 import { tryParse } from "@/lib/parser";
 
-const TREE_THRESHOLD = 1024 * 1024; // 1MB
+const TREE_THRESHOLD = 1024 * 1024;
+const SAVE_KEY = "flatjson:draft";
+const SAVE_DELAY = 3000;
 
 const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
   ssr: false,
@@ -27,25 +29,47 @@ export default function Home() {
   const [showArrayIndex, setShowArrayIndex] = useState(true);
   const [outputTab, setOutputTab] = useState<OutputTab>("tree");
   const [vimMode, setVimMode] = useState(false);
-  const [history, setHistory] = useState(false);
   const [themeName, setThemeName] = useState(DEFAULT_THEME);
+
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [largeFile, setLargeFile] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     if (localStorage.getItem("flatjson:vim") === "true") setVimMode(true);
     const saved = localStorage.getItem("flatjson:theme");
     if (saved && themes[saved]) setThemeName(saved);
-    if (!localStorage.getItem("flatjson:visited")) {
+
+    // Load draft or show sample for first visit
+    const draft = localStorage.getItem(SAVE_KEY);
+    if (draft) {
+      setInput(draft);
+    } else if (!localStorage.getItem("flatjson:visited")) {
       setInput(samples[DEFAULT_SAMPLE]);
       localStorage.setItem("flatjson:visited", "1");
     }
+
     const dm = localStorage.getItem("flatjson:darkMode");
     const isDark = dm === "true" || (dm === null && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setDarkMode(isDark);
     setMounted(true);
   }, []);
+
+  // Auto-save draft with debounce
+  function handleChange(text: string) {
+    setInput(text);
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      if (text) {
+        localStorage.setItem(SAVE_KEY, text);
+      } else {
+        localStorage.removeItem(SAVE_KEY);
+      }
+    }, SAVE_DELAY);
+  }
+
+  useEffect(() => () => clearTimeout(saveTimer.current), []);
 
   function toggleVim(v: boolean) {
     setVimMode(v);
@@ -98,22 +122,20 @@ export default function Home() {
       </header>
 
       <Toolbar
-        onFormat={() => { if (parsed.ok) setInput(parsed.source === "yaml" ? YAML.stringify(parsed.data, { indent: 2 }) : JSON.stringify(parsed.data, null, 2)); }}
-        onMinify={() => { if (parsed.ok) setInput(JSON.stringify(parsed.data)); }}
+        onFormat={() => { if (parsed.ok) handleChange(parsed.source === "yaml" ? YAML.stringify(parsed.data, { indent: 2 }) : JSON.stringify(parsed.data, null, 2)); }}
+        onMinify={() => { if (parsed.ok) handleChange(JSON.stringify(parsed.data)); }}
         isYaml={parsed.ok && parsed.source === "yaml"}
-        onClear={() => setInput("")}
+        onClear={() => handleChange("")}
         showTypes={showTypes}
         onShowTypesChange={setShowTypes}
         showArrayIndex={showArrayIndex}
         onShowArrayIndexChange={setShowArrayIndex}
         vimMode={vimMode}
         onVimModeChange={toggleVim}
-        history={history}
-        onHistoryChange={setHistory}
         theme={themeName}
         darkMode={darkMode}
         onThemeChange={changeTheme}
-        onLoadSample={setInput}
+        onLoadSample={handleChange}
       />
 
       <div className="flex-1 min-h-0">
@@ -122,7 +144,7 @@ export default function Home() {
             <div className="h-full flex flex-col border-r border-gray-200 dark:border-dark-border">
               <PanelHeader right={<StatusLabel parsed={parsed} largeFile={largeFile} />}>Input</PanelHeader>
               <div className="flex-1 min-h-0">
-                <JsonEditor value={input} onChange={setInput} vimMode={vimMode} onLargeFile={setLargeFile} />
+                <JsonEditor value={input} onChange={handleChange} vimMode={vimMode} onLargeFile={setLargeFile} />
               </div>
             </div>
           }
