@@ -28,7 +28,7 @@ export default function Home() {
   const [showTypes, setShowTypes] = useState(false);
   const [showArrayIndex, setShowArrayIndex] = useState(true);
   const [outputTab, setOutputTab] = useState<OutputTab>("tree");
-  const [vimMode, setVimMode] = useState(false);
+  const [keybinding, setKeybinding] = useState<"default" | "vim" | "emacs">("default");
   const [themeName, setThemeName] = useState(DEFAULT_THEME);
 
   const [darkMode, setDarkMode] = useState(false);
@@ -37,7 +37,8 @@ export default function Home() {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
-    if (localStorage.getItem("flatjson:vim") === "true") setVimMode(true);
+    const savedKb = localStorage.getItem("flatjson:keybinding");
+    if (savedKb === "vim" || savedKb === "emacs") setKeybinding(savedKb);
     const saved = localStorage.getItem("flatjson:theme");
     if (saved && themes[saved]) setThemeName(saved);
 
@@ -71,9 +72,9 @@ export default function Home() {
 
   useEffect(() => () => clearTimeout(saveTimer.current), []);
 
-  function toggleVim(v: boolean) {
-    setVimMode(v);
-    localStorage.setItem("flatjson:vim", String(v));
+  function changeKeybinding(k: "default" | "vim" | "emacs") {
+    setKeybinding(k);
+    localStorage.setItem("flatjson:keybinding", k);
   }
 
   function changeTheme(t: string) {
@@ -130,8 +131,8 @@ export default function Home() {
         onShowTypesChange={setShowTypes}
         showArrayIndex={showArrayIndex}
         onShowArrayIndexChange={setShowArrayIndex}
-        vimMode={vimMode}
-        onVimModeChange={toggleVim}
+        keybinding={keybinding}
+        onKeybindingChange={changeKeybinding}
         theme={themeName}
         darkMode={darkMode}
         onThemeChange={changeTheme}
@@ -144,7 +145,7 @@ export default function Home() {
             <div className="h-full flex flex-col border-r border-gray-200 dark:border-dark-border">
               <PanelHeader right={<StatusLabel parsed={parsed} largeFile={largeFile} />}>Input</PanelHeader>
               <div className="flex-1 min-h-0">
-                <JsonEditor value={input} onChange={handleChange} vimMode={vimMode} onLargeFile={setLargeFile} />
+                <JsonEditor value={input} onChange={handleChange} keybinding={keybinding} onLargeFile={setLargeFile} />
               </div>
             </div>
           }

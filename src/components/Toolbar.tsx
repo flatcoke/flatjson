@@ -13,8 +13,8 @@ interface ToolbarProps {
   onShowTypesChange: (v: boolean) => void;
   showArrayIndex: boolean;
   onShowArrayIndexChange: (v: boolean) => void;
-  vimMode: boolean;
-  onVimModeChange: (v: boolean) => void;
+  keybinding: "default" | "vim" | "emacs";
+  onKeybindingChange: (k: "default" | "vim" | "emacs") => void;
   theme: string;
   darkMode: boolean;
   onThemeChange: (t: string) => void;
@@ -82,7 +82,7 @@ function DropdownMenu({ label, items, closeOnSelect = false }: {
 
   return (
     <div className="relative" ref={ref}>
-      <Btn onClick={toggle}>{label} ▾</Btn>
+      <Btn onClick={toggle}>{label} <svg className="inline w-3 h-3 ml-0.5 -mr-0.5" viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg></Btn>
       {open && (
         <div className={menuClass}>
           {items.map((item, i) =>
@@ -126,8 +126,8 @@ export default function Toolbar({
   onShowTypesChange,
   showArrayIndex,
   onShowArrayIndexChange,
-  vimMode,
-  onVimModeChange,
+  keybinding,
+  onKeybindingChange,
   theme,
   darkMode,
   onThemeChange,
@@ -142,7 +142,18 @@ export default function Toolbar({
       <Sep />
 
       <DropdownMenu
-        label={theme}
+        label="Load Sample"
+        closeOnSelect
+        items={Object.keys(samples).map(k => ({
+          label: k,
+          onSelect: () => onLoadSample(samples[k]),
+        }))}
+      />
+
+      <Sep />
+
+      <DropdownMenu
+        label="Color Theme"
         closeOnSelect
         items={Object.keys(themes).map(k => {
           const t = getTheme(k, darkMode);
@@ -156,21 +167,18 @@ export default function Toolbar({
       />
 
       <DropdownMenu
-        label="Sample"
+        label="Keybindings"
         closeOnSelect
-        items={Object.keys(samples).map(k => ({
-          label: k,
-          onSelect: () => onLoadSample(samples[k]),
+        items={(["default", "vim", "emacs"] as const).map(k => ({
+          label: k === "default" ? "Default" : k.charAt(0).toUpperCase() + k.slice(1),
+          checked: keybinding === k,
+          onSelect: () => onKeybindingChange(k),
         }))}
       />
 
-      <Sep />
-
       <DropdownMenu
-        label="Options"
+        label="Tree Options"
         items={[
-          { label: "Vim", desc: "Vim keybindings in editor", checked: vimMode, onSelect: () => onVimModeChange(!vimMode) },
-          "divider",
           { label: "Types", desc: "Show type badges in tree", checked: showTypes, onSelect: () => onShowTypesChange(!showTypes) },
           { label: "Array Index", desc: "Show array indices in tree", checked: showArrayIndex, onSelect: () => onShowArrayIndexChange(!showArrayIndex) },
         ]}

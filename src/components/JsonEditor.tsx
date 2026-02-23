@@ -11,6 +11,7 @@ import { linter, lintGutter, type Diagnostic } from "@codemirror/lint";
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { vim } from "@replit/codemirror-vim";
+import { emacs } from "@replit/codemirror-emacs";
 import { tags } from "@lezer/highlight";
 import { parse as parseYaml, YAMLParseError } from "yaml";
 
@@ -74,15 +75,23 @@ const jsonMode = [json(), lintGutter(), jsonLinter];
 const yamlMode = [yamlLang(), lintGutter(), yamlLinter];
 const lightMode: [] = [];
 
-export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
+export type Keybinding = "default" | "vim" | "emacs";
+
+function keybindingExtension(kb: Keybinding) {
+  if (kb === "vim") return vim();
+  if (kb === "emacs") return emacs();
+  return [];
+}
+
+export default function JsonEditor({ value, onChange, keybinding = "default", onLargeFile }: {
   value: string;
   onChange: (v: string) => void;
-  vimMode: boolean;
+  keybinding?: Keybinding;
   onLargeFile?: (large: boolean) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
-  const vimComp = useRef(new Compartment());
+  const kbComp = useRef(new Compartment());
   const langComp = useRef(new Compartment());
   const heavyComp = useRef(new Compartment());
   const isYamlRef = useRef(false);
@@ -129,7 +138,7 @@ export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
       state: EditorState.create({
         doc: value,
         extensions: [
-          vimComp.current.of(vimMode ? vim() : []),
+          kbComp.current.of(keybindingExtension(keybinding)),
           lineNumbers(),
           drawSelection(),
           history(),
@@ -179,9 +188,9 @@ export default function JsonEditor({ value, onChange, vimMode, onLargeFile }: {
 
   useEffect(() => {
     viewRef.current?.dispatch({
-      effects: vimComp.current.reconfigure(vimMode ? vim() : []),
+      effects: kbComp.current.reconfigure(keybindingExtension(keybinding)),
     });
-  }, [vimMode]);
+  }, [keybinding]);
 
   useEffect(() => {
     const view = viewRef.current;
