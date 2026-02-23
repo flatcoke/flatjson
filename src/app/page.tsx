@@ -123,10 +123,6 @@ export default function Home() {
       </header>
 
       <Toolbar
-        onFormat={() => { if (parsed.ok) handleChange(parsed.source === "yaml" ? YAML.stringify(parsed.data, { indent: 2 }) : JSON.stringify(parsed.data, null, 2)); }}
-        onMinify={() => { if (parsed.ok) handleChange(JSON.stringify(parsed.data)); }}
-        isYaml={parsed.ok && parsed.source === "yaml"}
-        onClear={() => handleChange("")}
         showTypes={showTypes}
         onShowTypesChange={setShowTypes}
         showArrayIndex={showArrayIndex}
@@ -143,7 +139,29 @@ export default function Home() {
         <SplitPanel
           left={
             <div className="h-full flex flex-col border-r border-gray-200 dark:border-dark-border">
-              <PanelHeader right={<StatusLabel parsed={parsed} largeFile={largeFile} />}>Input</PanelHeader>
+              <div className="px-3 py-1.5 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex items-center justify-between">
+                <div className="flex gap-1">
+                  {(["Format", "Minify", "Clear"] as const).map(label => (
+                    <button
+                      key={label}
+                      onClick={() => {
+                        if (label === "Format" && parsed.ok) handleChange(parsed.source === "yaml" ? YAML.stringify(parsed.data, { indent: 2 }) : JSON.stringify(parsed.data, null, 2));
+                        if (label === "Minify" && parsed.ok && !(parsed.source === "yaml")) handleChange(JSON.stringify(parsed.data));
+                        if (label === "Clear") handleChange("");
+                      }}
+                      disabled={label === "Minify" && parsed.ok && parsed.source === "yaml"}
+                      className={`px-2.5 py-0.5 text-xs font-medium rounded transition-colors ${
+                        (label === "Minify" && parsed.ok && parsed.source === "yaml")
+                          ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                          : "text-gray-500 dark:text-dark-text-muted hover:bg-gray-200 dark:hover:bg-dark-btn-hover"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <StatusLabel parsed={parsed} largeFile={largeFile} />
+              </div>
               <div className="flex-1 min-h-0">
                 <JsonEditor value={input} onChange={handleChange} keybinding={keybinding} onLargeFile={setLargeFile} />
               </div>

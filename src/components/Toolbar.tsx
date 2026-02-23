@@ -5,10 +5,6 @@ import { samples } from "./SampleData";
 import { themes, getTheme } from "./themes";
 
 interface ToolbarProps {
-  onFormat: () => void;
-  onMinify: () => void;
-  onClear: () => void;
-  isYaml?: boolean;
   showTypes: boolean;
   onShowTypesChange: (v: boolean) => void;
   showArrayIndex: boolean;
@@ -38,7 +34,7 @@ function Btn({ children, disabled, ...props }: React.ButtonHTMLAttributes<HTMLBu
 }
 
 function Sep() {
-  return <div className="w-px h-5 bg-gray-300 dark:bg-dark-border" />;
+  return <div className="w-px h-6 bg-gray-400 dark:bg-gray-500 mx-1" />;
 }
 
 const activeDropdown = { close: null as (() => void) | null };
@@ -118,10 +114,6 @@ function DropdownMenu({ label, items, closeOnSelect = false }: {
 }
 
 export default function Toolbar({
-  onFormat,
-  onMinify,
-  onClear,
-  isYaml,
   showTypes,
   onShowTypesChange,
   showArrayIndex,
@@ -135,12 +127,6 @@ export default function Toolbar({
 }: ToolbarProps) {
   return (
     <div className="flex items-center gap-3 px-4 py-2 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex-wrap">
-      <Btn onClick={onFormat}>Format</Btn>
-      <Btn onClick={onMinify} disabled={isYaml}>Minify</Btn>
-      <Btn onClick={onClear}>Clear</Btn>
-
-      <Sep />
-
       <DropdownMenu
         label="Load Sample"
         closeOnSelect
