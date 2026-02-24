@@ -3,11 +3,12 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import YAML from "yaml";
-import Toolbar from "@/components/Toolbar";
 import SplitPanel from "@/components/SplitPanel";
-import PanelHeader from "@/components/PanelHeader";
 import StatusLabel from "@/components/StatusLabel";
 import OutputPanel from "@/components/OutputPanel";
+import SettingsMenu from "@/components/SettingsMenu";
+import LoadSampleMenu from "@/components/LoadSampleMenu";
+// KeybindingMenu merged into SettingsMenu
 import { samples, DEFAULT_SAMPLE } from "@/components/SampleData";
 import { themes, getTheme, DEFAULT_THEME } from "@/components/themes";
 import { tryParse } from "@/lib/parser";
@@ -35,6 +36,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [largeFile, setLargeFile] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const inputRef = useRef(input);
 
   useEffect(() => {
     const savedKb = localStorage.getItem("flatjson:keybinding");
@@ -60,6 +62,7 @@ export default function Home() {
   // Auto-save draft with debounce
   function handleChange(text: string) {
     setInput(text);
+    inputRef.current = text;
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       if (text) {
@@ -70,7 +73,25 @@ export default function Home() {
     }, SAVE_DELAY);
   }
 
-  useEffect(() => () => clearTimeout(saveTimer.current), []);
+  useEffect(() => {
+    const flush = () => {
+      if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+        saveTimer.current = undefined;
+        const text = inputRef.current;
+        if (text) {
+          localStorage.setItem(SAVE_KEY, text);
+        } else {
+          localStorage.removeItem(SAVE_KEY);
+        }
+      }
+    };
+    window.addEventListener("beforeunload", flush);
+    return () => {
+      window.removeEventListener("beforeunload", flush);
+      clearTimeout(saveTimer.current);
+    };
+  }, []);
 
   function changeKeybinding(k: "default" | "vim" | "emacs") {
     setKeybinding(k);
@@ -122,25 +143,12 @@ export default function Home() {
         </button>
       </header>
 
-      <Toolbar
-        showTypes={showTypes}
-        onShowTypesChange={setShowTypes}
-        showArrayIndex={showArrayIndex}
-        onShowArrayIndexChange={setShowArrayIndex}
-        keybinding={keybinding}
-        onKeybindingChange={changeKeybinding}
-        theme={themeName}
-        darkMode={darkMode}
-        onThemeChange={changeTheme}
-        onLoadSample={handleChange}
-      />
-
       <div className="flex-1 min-h-0">
         <SplitPanel
           left={
             <div className="h-full flex flex-col border-r border-gray-200 dark:border-dark-border">
-              <div className="px-3 py-1.5 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex items-center justify-between">
-                <div className="flex gap-1">
+              <div className="px-3 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex items-center justify-between h-[33px]">
+                <div className="flex gap-1 items-center">
                   {(["Format", "Minify", "Clear"] as const).map(label => (
                     <button
                       key={label}
@@ -150,7 +158,7 @@ export default function Home() {
                         if (label === "Clear") handleChange("");
                       }}
                       disabled={label === "Minify" && parsed.ok && parsed.source === "yaml"}
-                      className={`px-2.5 py-0.5 text-xs font-medium rounded transition-colors ${
+                      className={`px-2.5 h-6 text-xs font-medium rounded inline-flex items-center transition-colors ${
                         (label === "Minify" && parsed.ok && parsed.source === "yaml")
                           ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
                           : "text-gray-500 dark:text-dark-text-muted hover:bg-gray-200 dark:hover:bg-dark-btn-hover"
@@ -181,6 +189,14 @@ export default function Home() {
               inputSize={input.length}
               treeDisabled={input.length > TREE_THRESHOLD}
               largeFile={largeFile}
+              settingsSlot={
+                <SettingsMenu
+                  showTypes={showTypes} onShowTypesChange={setShowTypes}
+                  showArrayIndex={showArrayIndex} onShowArrayIndexChange={setShowArrayIndex}
+                  theme={themeName} darkMode={darkMode} onThemeChange={changeTheme}
+                  keybinding={keybinding} onKeybindingChange={changeKeybinding}
+                />
+              }
             />
           }
         />

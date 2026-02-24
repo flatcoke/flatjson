@@ -22,6 +22,7 @@ interface OutputPanelProps {
   inputSize: number;
   treeDisabled: boolean;
   largeFile: boolean;
+  settingsSlot?: React.ReactNode;
 }
 
 export default function OutputPanel({
@@ -37,28 +38,32 @@ export default function OutputPanel({
   inputSize,
   treeDisabled,
   largeFile,
+  settingsSlot,
 }: OutputPanelProps) {
   return (
     <div className="h-full flex flex-col bg-white dark:bg-dark-bg">
-      <div className="px-3 py-1.5 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex items-center justify-between">
-        <div className="flex gap-1">
+      <div className="px-3 bg-surface dark:bg-dark-surface border-b border-gray-200 dark:border-dark-border flex items-center justify-between h-[33px]">
+        <div className="flex h-full items-center">
           {(["tree", "json", "yaml"] as const).map(tab => (
             <button
               key={tab}
               onClick={() => onTabChange(tab)}
-              className={`px-2.5 py-0.5 text-xs font-medium rounded transition-colors ${
+              className={`px-3 text-xs font-medium transition-colors h-full border-b-2 ${
                 outputTab === tab
-                  ? "bg-brand text-white"
-                  : "text-gray-500 dark:text-dark-text-muted hover:bg-gray-200 dark:hover:bg-dark-btn-hover"
+                  ? "border-brand text-gray-800 dark:text-dark-text"
+                  : "border-transparent text-gray-400 dark:text-dark-text-muted hover:text-gray-600 dark:hover:text-gray-300"
               }`}
             >
               {tab === "tree" ? "Tree" : tab.toUpperCase()}
             </button>
           ))}
         </div>
-        {parsed.ok && (
-          <CopyBtn text={outputTab === "yaml" ? formattedYaml : formattedJson} />
-        )}
+        <div className="flex items-center gap-1">
+          {parsed.ok && (
+            <CopyBtn text={outputTab === "yaml" ? formattedYaml : formattedJson} />
+          )}
+          {settingsSlot}
+        </div>
       </div>
       <div className="flex-1 min-h-0 overflow-auto">
         {parsed.ok ? (
