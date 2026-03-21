@@ -16,6 +16,11 @@ import { tryParse } from "@/lib/parser";
 const TREE_THRESHOLD = 1024 * 1024;
 const SAVE_KEY = "flatjson:draft";
 const SAVE_DELAY = 3000;
+const FONT_SIZE_MAP = {
+  small:  { code: "12px", sm: "10px" },
+  medium: { code: "13px", sm: "11px" },
+  large:  { code: "14px", sm: "12px" },
+} as const;
 
 const JsonEditor = dynamic(() => import("@/components/JsonEditor"), {
   ssr: false,
@@ -32,6 +37,7 @@ export default function Home() {
   const [keybinding, setKeybinding] = useState<"default" | "vim" | "emacs">("default");
   const [themeName, setThemeName] = useState(DEFAULT_THEME);
 
+  const [fontSize, setFontSize] = useState<"small" | "medium" | "large">("medium");
   const [darkMode, setDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [largeFile, setLargeFile] = useState(false);
@@ -43,6 +49,8 @@ export default function Home() {
     if (savedKb === "vim" || savedKb === "emacs") setKeybinding(savedKb);
     const saved = localStorage.getItem("flatjson:theme");
     if (saved && themes[saved]) setThemeName(saved);
+    const savedFs = localStorage.getItem("flatjson:fontSize");
+    if (savedFs === "small" || savedFs === "medium" || savedFs === "large") setFontSize(savedFs);
 
     // Load draft or show sample for first visit
     const draft = localStorage.getItem(SAVE_KEY);
@@ -102,6 +110,17 @@ export default function Home() {
     setThemeName(t);
     localStorage.setItem("flatjson:theme", t);
   }
+
+  function changeFontSize(fs: "small" | "medium" | "large") {
+    setFontSize(fs);
+    localStorage.setItem("flatjson:fontSize", fs);
+  }
+
+  useEffect(() => {
+    const sizes = FONT_SIZE_MAP[fontSize];
+    document.documentElement.style.setProperty("--text-code", sizes.code);
+    document.documentElement.style.setProperty("--text-code-sm", sizes.sm);
+  }, [fontSize]);
 
   function toggleDarkMode() {
     const next = !darkMode;
@@ -195,6 +214,7 @@ export default function Home() {
                   showArrayIndex={showArrayIndex} onShowArrayIndexChange={setShowArrayIndex}
                   theme={themeName} darkMode={darkMode} onThemeChange={changeTheme}
                   keybinding={keybinding} onKeybindingChange={changeKeybinding}
+                  fontSize={fontSize} onFontSizeChange={changeFontSize}
                 />
               }
             />

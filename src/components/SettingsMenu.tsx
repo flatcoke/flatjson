@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { themes, getTheme } from "./themes";
 
 type Keybinding = "default" | "vim" | "emacs";
+type FontSize = "small" | "medium" | "large";
 
 interface SettingsMenuProps {
   showTypes: boolean;
@@ -15,6 +16,8 @@ interface SettingsMenuProps {
   onThemeChange: (t: string) => void;
   keybinding: Keybinding;
   onKeybindingChange: (k: Keybinding) => void;
+  fontSize: FontSize;
+  onFontSizeChange: (fs: FontSize) => void;
 }
 
 const KEYBINDING_OPTIONS: { value: Keybinding; label: string }[] = [
@@ -28,6 +31,7 @@ export default function SettingsMenu({
   showArrayIndex, onShowArrayIndexChange,
   theme, darkMode, onThemeChange,
   keybinding, onKeybindingChange,
+  fontSize, onFontSizeChange,
 }: SettingsMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -53,10 +57,17 @@ export default function SettingsMenu({
       onSelect: () => onKeybindingChange(opt.value),
     })),
     "divider",
+    "Font Size",
+    ...(["small", "medium", "large"] as const).map(fs => ({
+      label: fs.charAt(0).toUpperCase() + fs.slice(1),
+      checked: fontSize === fs,
+      onSelect: () => onFontSizeChange(fs),
+    })),
+    "divider",
     "Color Theme",
     ...Object.keys(themes).map(k => {
       const t = getTheme(k, darkMode);
-      return { label: k, checked: theme === k, colors: [t.key, t.string, t.number], onSelect: () => onThemeChange(k) };
+      return { label: t.label, checked: theme === k, colors: [t.key, t.string, t.number], onSelect: () => onThemeChange(k) };
     }),
     "divider",
     "Tree",
@@ -77,7 +88,7 @@ export default function SettingsMenu({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-0.5 z-50 min-w-[200px] max-h-[400px] overflow-y-auto py-1 bg-[#2b2b3d] border border-[#3d3d5c] rounded-md shadow-xl backdrop-blur">
+        <div className="absolute right-0 top-full mt-0.5 z-50 min-w-[200px] py-1 bg-[#2b2b3d] border border-[#3d3d5c] rounded-md shadow-xl backdrop-blur">
           {items.map((item, i) => {
             if (item === "divider") return <div key={`d-${i}`} className="my-1 border-t border-[#3d3d5c]" />;
             if (typeof item === "string") return <div key={item} className="px-3 py-1 text-[11px] text-gray-400 font-semibold uppercase tracking-wider">{item}</div>;
